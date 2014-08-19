@@ -14,7 +14,7 @@ jQuery(function($) {
 	var ajax; //true if new content is being loaded right now
 	var stopped; //true if the reply button was clicked
 	var LoadingBar = $('<span class="Progress"></span>');
-	var DataListSelector = '#Content ul.DataList, main.page-content ul.DataList';//default, bootstrap
+	var DataListSelector = '#Content ul.DataList, main.page-content ul.DataList'; //default, bootstrap
 	var DataList = $(DataListSelector);
 	if ($('.Pager').length > 0)
 		$('#EndInfiniteScroll').show();
@@ -77,7 +77,6 @@ jQuery(function($) {
 		e.preventDefault();
 		stopped = true;
 		$('html, body').animate({scrollTop: $('#Form_Comment').offset().top}, 400);
-		$(this).fadeOut();//todo
+		$(this).fadeOut();
 	});
-
 });

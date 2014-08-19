@@ -2,25 +2,18 @@
 $PluginInfo['InfiniteScroll'] = array(
 	'Name' => 'Infinite Scroll',
 	'Description' => 'Infinite scrolling for discussions and discussion lists',
-	'Version' => '0.1',
+	'Version' => '0.1.1',
 	'RequiredApplications' => array('Vanilla' => '2.1'),
 	'MobileFriendly' => false,
-    'SettingsUrl' => '/settings/infinitescroll',
-	'SettingsPermission' => 'Garden.Settings.Manage',
 	'Author' => 'Bleisitvt',
 	'AuthorUrl' => 'http://bleistivt.net'
 );
 
 class InfiniteScroll extends Gdn_Plugin {
-
-	public function SettingsController_InfiniteScroll_Create($Sender) {
-		$Sender->AddSideMenu('settings/testingground');
-		$Sender->Title($this->GetPluginName().' '.T('Settings'));
-		$Sender->Render($this->GetView('settings.php'));
-	}
 	
 	public function Discussioncontroller_Render_Before($Sender) {
 		$this->Ressources($Sender);
+		//Add the reply button
 		$Sender->AddAsset('Content', Anchor('Reply', '#Form_Comment',
 			array(
 				'id' => 'EndInfiniteScroll',
@@ -38,6 +31,7 @@ class InfiniteScroll extends Gdn_Plugin {
 		$this->Ressources($Sender);
 	}
 	
+	//check user preferences and include js
 	private function Ressources($Sender) {
 		$Session = Gdn::Session();
 		if ($Session->IsValid() && !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
@@ -45,6 +39,7 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
 	}
 	
+	//preference checkbox
 	public function ProfileController_EditMyAccountAfter_Handler($Sender) {
 		$Session = Gdn::Session();
 		$checked = ($this->GetUserMeta($Session->UserID, 'Enable', true, true))

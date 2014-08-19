@@ -14,15 +14,25 @@ jQuery(function($) {
 	var ajax; //true if new content is being loaded right now
 	var stopped; //true if the reply button was clicked
 	var LoadingBar = $('<span class="Progress"></span>');
-	var DataListSelector = '#Content ul.DataList, main.page-content ul.DataList'; //default, bootstrap
+	var Dummy = $('<div/>').css('min-height', '1000px');
+	//selector for default theme and vanilla-bootstrap
+	var DataListSelector = '#Content ul.DataList, main.page-content ul.DataList';
 	var DataList = $(DataListSelector);
+	var MessageList = $('div.MessageList.Discussion');
 	if ($('.Pager').length > 0)
 		$('#EndInfiniteScroll').show();
 	//hide the pagers on both ends
-	if ($('#PagerAfter a.Next').length === 0)
+	if ($('#PagerAfter a.Next').length === 0) {
 		$('#PagerAfter').hide();
-	if ($('#PagerBefore a.Previous').length === 0)
+		var PagerAfterhidden = true;
+	}
+	if ($('#PagerBefore a.Previous').length === 0) {
 		$('#PagerBefore').hide();
+		var PagerBeforehidden = true;
+	}
+	//to prevent page jumping on short content, extend the content area
+	if (!(PagerBeforehidden && PagerAfterhidden) && MessageList.length > 0)
+		$('#Content, main.page-content').prepend(Dummy);
 	function InfiniteScroll() {
 		if (ajax || stopped)
 			return;
@@ -34,8 +44,11 @@ jQuery(function($) {
 			PagerAfter = PagerAfterA.parent();
 			//DeliveryType=Asset can not be used as it doesn't include the pager
 			$.get(PagerAfterA.attr('href'), function(data) {
-				//extract the content
-				$(DataListSelector, data).contents().appendTo(DataList);
+				//extract and append the content
+				$(DataListSelector, data)
+					.contents()
+					.appendTo(DataList)
+					.effect('highlight', {}, 'slow');
 				//extract the pager if it is not the last
 				if ($('#PagerAfter a.Next', data).length > 0)
 					PagerAfter.replaceWith($('#PagerAfter', data));
@@ -54,15 +67,19 @@ jQuery(function($) {
 			$.get(PagerBeforeA.attr('href'), function(data) {
 				var OldHeight = $(document).height();
 				var OldScroll = $(window).scrollTop();
-				$(DataListSelector, data).contents().prependTo(DataList);
+				$(DataListSelector, data)
+					.contents()
+					.prependTo(DataList)
+					.effect("highlight", {}, "slow");
 				//prepend the first post of a discussion
-				$('div.ItemDiscussion', data).appendTo('div.MessageList.Discussion');
+				$('div.ItemDiscussion', data).appendTo(MessageList);
 				if ($('#PagerBefore a.Previous', data).length > 0)
 					PagerBefore.replaceWith($('#PagerBefore', data));
 				else
 					PagerBefore.remove();
 				//the scroll position needs to be adjusted when prepending content
 				$(document).scrollTop(OldScroll + $(document).height() - OldHeight);
+				Dummy.remove();
 			}).always(function() {
 				ajax = false;
 			});

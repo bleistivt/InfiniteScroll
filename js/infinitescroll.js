@@ -31,7 +31,7 @@ jQuery(function($) {
 		var PagerBeforehidden = true;
 	}
 	//to prevent page jumping on short content, extend the content area
-	if (!(PagerBeforehidden && PagerAfterhidden) && MessageList.length > 0)
+	if (!(PagerBeforehidden && PagerAfterhidden) && MessageList.length > 0)//todo
 		$('#Content, main.page-content').prepend(Dummy);
 	function InfiniteScroll() {
 		if (ajax || stopped)

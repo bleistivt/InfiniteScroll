@@ -2,7 +2,7 @@
 $PluginInfo['InfiniteScroll'] = array(
 	'Name' => 'Infinite Scroll',
 	'Description' => 'Infinite scrolling for discussions and discussion lists',
-	'Version' => '0.2',
+	'Version' => '0.3',
 	'RequiredApplications' => array('Vanilla' => '2.1'),
 	'SettingsPermission' => 'Garden.Settings.Manage',
 	'SettingsUrl' => '/settings/infinitescroll',
@@ -18,7 +18,6 @@ class InfiniteScroll extends Gdn_Plugin {
 			return;
 		$this->Ressources($Sender);
 		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
-		$Sender->AddDefinition('InfiniteScroll_Header', C('Plugins.InfiniteScroll.Header', true));
 		$Sender->AddDefinition('InfiniteScroll_FixedPanel', C('Plugins.InfiniteScroll.FixedPanel', false));
 		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Discussion->CountComments);
 		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['Page']);
@@ -29,13 +28,11 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Sender->AddDefinition('InfiniteScroll_ProgressBg',
 			C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'));
 		//header
-		if (C('Plugins.InfiniteScroll.Header', true)) {
+		if (C('Plugins.InfiniteScroll.Nav', true)) {
 			$Controls = Anchor('&#x25b2;', '#', array('id' => 'InfScrollJTT'))
+				.Wrap(' ', 'span', array('id' => 'NavIndex'))
 				.Anchor('&#x25bc;', '#', array('id' => 'InfScrollJTB'));
-			$Sender->AddAsset('Foot', Wrap(
-				Wrap($Controls, 'div', array('class' => 'InfScrollControls')),
-				'div', array('class' => 'InfScrollHeader')
-			));
+			$Sender->AddAsset('Foot',Wrap($Controls, 'div', array('id' => 'InfScrollNav')));
 		}
 		//loading bar
 		$Sender->AddAsset('Foot', Wrap('', 'span',
@@ -79,7 +76,12 @@ class InfiniteScroll extends Gdn_Plugin {
 			return;
 		$Sender->AddJsFile($this->GetResource('js/nanobar.min.js', false, false));
 		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
-		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));;
+		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));
+		$pos = array ('top:0;right:0;', 'bottom:0;right:0;', 'top:0;left:0;', 'bottom:0;left:0;');
+		$Position = '#InfScrollNav{'.$pos[C('Plugins.InfiniteScroll.NavPosition', '0')].'}';
+		$Color = '#InfScrollNav,#InfScrollNav a,#InfScrollNav a:hover{color:'
+			.htmlspecialchars(C('Plugins.InfiniteScroll.TextColor', 'rgba(0, 0, 0, 0.5)')).';}';
+		$Sender->Head->AddString('<style type="text/css">'.$Position.$Color.'</style>');
 	}
 	
 	//user preference checkbox
@@ -119,64 +121,39 @@ class InfiniteScroll extends Gdn_Plugin {
 				'LabelCode' => 'Enable on discussion lists',
 				'Default' => C('Plugins.InfiniteScroll.DiscussionList', true)
 			),
-			'Plugins.InfiniteScroll.Header' => array(
+			'Plugins.InfiniteScroll.Nav' => array(
 				'Control' => 'CheckBox',
-				'LabelCode' => 'Show a fixed header for easier navigation',
-				'Description' => T('InfiniteScroll.HeaderDesc', 'When scrolling down, the discussion title and a progress bar to track how far you are into a discussion will be shown in a header. The appearance of it can be altered using the options below.'),
-				'Default' => C('Plugins.InfiniteScroll.Header', true)
+				'LabelCode' => 'Show navigation',
+				'Description' => T('InfiniteScroll.NavDesc', 'This adds a box with 2 Buttons to jump to the top and bottom of the page, so users don\'t have to scroll thorugh endless discussions.'),
+				'Default' => C('Plugins.InfiniteScroll.Nav', true)
+			),
+			'Plugins.InfiniteScroll.NavPosition' => array(
+				'Control' => 'dropdown',
+				'Items' => array('top right', 'bottom right', 'top left', 'bottom left'),
+				'LabelCode' => 'Navigation Position',
+				'Default' => C('Plugins.InfiniteScroll.NavPosition', '0')
+			),
+			'Plugins.InfiniteScroll.TextColor' => array(
+				'Control' => 'textbox',
+				'LabelCode' => 'Navigation Text Color',
+				'Default' => C('Plugins.InfiniteScroll.TextColor', 'rgba(0, 0, 0, 0.5)'),
+				'Options' => array('maxlength' => '35', 'style' => 'width:180px;')
 			),
 			'Plugins.InfiniteScroll.ProgressColor' => array(
 				'Control' => 'textbox',
 				'LabelCode' => 'Progress Bar Color',
-				'Description' => T('InfiniteScroll.ProgColorDesc', 'Define the color of the progressbar on the top to match your theme. Can be any CSS color, e.g. red, #ff0000, rgba(255, 0, 0, 1)...'),
+				'Description' => T('InfiniteScroll.ProgColorDesc', 'Define the color of the progressbar on the top to match your theme. Can be any CSS color, e.g. red, #ff0000, rgba(255, 0, 0, 1). If you don\'t want the bar to be visible, just type in "transparent".'),
 				'Default' => C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'),
-				'Options' => array('maxlength' => '35', 'style' => 'width:180px;')
-			),
-			'Plugins.InfiniteScroll.HeaderBg' => array(
-				'Control' => 'textbox',
-				'LabelCode' => 'Header Background Color',
-				'Default' => C('Plugins.InfiniteScroll.HeaderBg', '#fff'),
-				'Options' => array('maxlength' => '35', 'style' => 'width:180px;')
-			),
-			'Plugins.InfiniteScroll.LineColor' => array(
-				'Control' => 'textbox',
-				'LabelCode' => 'Line and Shadow Color',
-				'Default' => C('Plugins.InfiniteScroll.LineColor', '#ccc'),
 				'Options' => array('maxlength' => '35', 'style' => 'width:180px;')
 			),
 			'Plugins.InfiniteScroll.FixedPanel' => array(
 				'Control' => 'CheckBox',
-				'LabelCode' => 'Fixiate the Panel',
-				'Description' => T('InfiniteScroll.FixedPanelDesc', 'This simply applies a "position: fixed;" to the Panel and makes some adjusments. This should be tested first, as it may require changes to your theme to work.'),
+				'LabelCode' => 'Fixed Panel',
+				'Description' => T('InfiniteScroll.FixedPanelDesc', 'This simply applies a "position: fixed;" to the Panel and makes some adjustments. This should be tested first, as it may require changes to your theme to work.'),
 				'Default' => C('Plugins.InfiniteScroll.FixedPanel', false)
 			),
 		));
 		$Conf->RenderAll();
-	}
-	
-	//Converts a (numeric) CSS color to rgba representation
-	private function ToRgba($Color, $Opacity) {
-		if ($Color == 'transparent')
-			return 'transparent';
-		$Color = str_ireplace(array('black', 'white'), array('#000', '#fff'), $Color);
-		if (strpos($Color, 'rgba') !== false) {
-			$A = floatval(substr($Color, strrpos($Color, ',') + 1));
-			$Color = substr($Color, 0, strrpos($Color, ','));
-			$Opacity = number_format((float)($Opacity * $A), 3, '.', '');
-			return $Color.', '.$Opacity.')';
-		} elseif (strpos($Color, 'rgb') !== false) {
-			$Color = substr($Color, 0, strrpos($Color, ')'));
-			$Color = str_ireplace('rgb', 'rgba', $Color);
-			return $Color.', '.$Opacity.')';
-		} elseif (strpos($Color, '#') !== false) {
-			$regex = '/^\s*#([a-f0-9]{1,2})([a-f0-9]{1,2})([a-f0-9]{1,2})\s*$/i';
-			preg_match($regex, $Color, $m);
-			foreach ($m as &$col)
-				$col = hexdec(substr($col.$col, 0, 2));
-			return 'rgba('.$m[1].', '.$m[2].', '.$m[3].', '.$Opacity.')';
-		} else {
-			return $Color;
-		}
 	}
 
 }

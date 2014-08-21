@@ -14,9 +14,9 @@ $.extend($.expr[':'], {
 jQuery(function($) {
 	var ajax; //true if new content is being loaded right now
 	var pagesLoaded = 1;
+	var pagesBefore = gdn.definition('InfiniteScroll_Page') - 1;
 	var countComments = gdn.definition('InfiniteScroll_CountComments');
 	var perPage = gdn.definition('InfiniteScroll_PerPage');
-	var pagesBefore = gdn.definition('InfiniteScroll_Page') - 1;
 	var inDiscussion = gdn.definition('InfiniteScroll_InDiscussion', false);
 	var url = gdn.definition('InfiniteScroll_Url', false);
 	var discussionUrl = url;
@@ -28,9 +28,9 @@ jQuery(function($) {
 	//selector for default theme and vanilla-bootstrap
 	var DataListSelector = '#Content ul.DataList, main.page-content ul.DataList';
 	var ContentSelector = '#Content, main.page-content';
-	var NavIndex = $('#NavIndex');//todo
+	var NavIndex = $('#NavIndex');
 	var Panel = $('#Panel')
-	var panelTop = $('#Panel').offset().top;
+	var panelTop = Panel.offset().top;
 	var DataList, MessageList, Content, CommentForm;
 	
 	function preparation() {
@@ -62,13 +62,12 @@ jQuery(function($) {
 	}
 	preparation();
 	
-	//create the header and progress bar
+	//create the progress bar
 	if (inDiscussion) {
 		var ProgressBar = new Nanobar({
 			bg: gdn.definition('InfiniteScroll_ProgressBg'),
 			id: 'ProgressBar'
 		});
-		if (gdn.definition('InfiniteScroll_Header'));
 	}
 	
 	function infiniteScroll() {
@@ -168,19 +167,21 @@ jQuery(function($) {
 		}
 		if (ajax)
 			return;
-		ajax = true; //block any other requests
+		ajax = true;
+		//true = jump to bottom, false = jump to top
 		var pageNo = (direction) ? gdn.definition('InfiniteScroll_Pages') : 1;
 		Content.css('opacity', 0);
 		$('#PageProgress').show();
 		$.get(discussionUrl + '/p' + pageNo, function(data) {
+		//drop everything and just load the first/last set of posts
 				Content.replaceWith($(ContentSelector, data));
 				preparation();
+				pagesLoaded = 1;
 				pagesBefore = pageNo - 1;
 				if (!direction)
 					$('html, body').animate({scrollTop: 0}, 400);
 				else
 					$('html, body').animate({scrollTop: $('#Form_Comment').offset().top}, 400);
-				pagesLoaded = 1;
 		}).always(function() {
 			ajax = false;
 			Content.css('opacity', 1);
@@ -193,15 +194,35 @@ jQuery(function($) {
 	//trigger for short content
 	infiniteScroll();
 	
-	if (gdn.definition('InfiniteScroll_FixedPanel'))
+	if (gdn.definition('InfiniteScroll_FixedPanel')) {
+		//make the viewport "pick up" the Panel when scrolling down
 		$(window).scroll(function () {
 			var st = $(this).scrollTop();
 			if (st >= panelTop)
 				Panel.addClass('InfScrollFixed');
 			else
-				Panel.removeClass('InfScrollFixed');
+				Panel.removeClass('InfScrollFixed').css('margin-top', 0);
 		});
-	
+		//if the panel is too high for the viewport, add "fake" scrolling
+		var difference = Panel.height() - $(window).height();
+		console.log(difference);
+		if (difference > 0) {
+			var track = 0;
+			Panel.on('DOMMouseScroll mousewheel', function(e) {
+				if (!Panel.hasClass('InfScrollFixed'))
+					return false;
+				if ((e.originalEvent.detail > 0 || e.originalEvent.wheelDelta < 0) && track > -difference) {
+					track -= 50;
+					Panel.stop().animate({marginTop: track + 'px'}, 'fast', 'easeOutCirc');
+				} else if (track < 0) {
+					track += 50;
+					Panel.stop().animate({marginTop: track + 'px'}, 'fast', 'easeOutCirc');
+				}
+				return false;
+			});
+		}
+	}
+
 	$('#InfScrollJTT').click(function(e) {e.preventDefault(); jumpToEnd(false)});
 	$('#InfScrollJTB').click(function(e) {e.preventDefault(); jumpToEnd(true)});
 

@@ -10,30 +10,56 @@ $.extend($.expr[':'], {
 		return eb >= wt && et <= wb;
 	}
 });
+
 jQuery(function($) {
 	var ajax; //true if new content is being loaded right now
 	var stopped; //true if the reply button was clicked
+	var pagesLoaded = 1;
+	var InDiscussion = gdn.definition('InfiniteScroll_InDiscussion', false);
+	var url = gdn.definition('InfiniteScroll_Url');
+	var discussionUrl = url;
 	var LoadingBar = $('<span class="Progress"></span>');
-	var Dummy = $('<div/>').css('min-height', '1000px');
+	var Dummy = $('<div/>');
+	
 	//selector for default theme and vanilla-bootstrap
 	var DataListSelector = '#Content ul.DataList, main.page-content ul.DataList';
 	var DataList = $(DataListSelector);
 	var MessageList = $('div.MessageList.Discussion');
+	var Content = $('#Content, main.page-content')
+	
 	if ($('.Pager').length > 0)
-		$('#EndInfiniteScroll').show();
+		$('#EndInfiniteScroll').show();//todo
 	//hide the pagers on both ends
 	if ($('#PagerAfter a.Next').length === 0) {
 		$('#PagerAfter').hide();
-		var PagerAfterhidden = true;
+		var pagerAfterhidden = true;
 	}
 	if ($('#PagerBefore a.Previous').length === 0) {
 		$('#PagerBefore').hide();
-		var PagerBeforehidden = true;
+		var pagerBeforehidden = true;
 	}
+	
 	//to prevent page jumping on short content, extend the content area
-	if (!(PagerBeforehidden && PagerAfterhidden) && MessageList.length > 0)//todo
-		$('#Content, main.page-content').prepend(Dummy);
-	function InfiniteScroll() {
+	if (!(pagerBeforehidden && pagerAfterhidden) && InDiscussion) {
+		var dummyHeight = $(window).height() - (Content.position().top + Content.outerHeight());
+		if (dummyHeight > 0) {
+			Dummy.css('min-height', dummyHeight);
+			Content.prepend(Dummy);
+		}
+	}
+	
+	//create the header and progress bar
+	if (InDiscussion) {
+		var ProgressBar = new Nanobar({
+			bg: gdn.definition('InfiniteScroll_ProgressBg'),
+			id: 'ProgressBar'
+		});
+		//ProgressBar.go(99);
+	}
+	
+	function infiniteScroll() {
+		if (InDiscussion)
+			updateUrl();
 		if (ajax || stopped)
 			return;
 		var PagerAfterA = $('#PagerAfter:inview a.Next');
@@ -54,6 +80,7 @@ jQuery(function($) {
 					PagerAfter.replaceWith($('#PagerAfter', data));
 				else
 					PagerAfter.remove();
+				pagesLoaded++;
 			}).always(function() {
 				//allow new requests, even if this request failed somehow
 				ajax = false;
@@ -77,18 +104,31 @@ jQuery(function($) {
 					PagerBefore.replaceWith($('#PagerBefore', data));
 				else
 					PagerBefore.remove();
+				Dummy.remove();
 				//the scroll position needs to be adjusted when prepending content
 				$(document).scrollTop(OldScroll + $(document).height() - OldHeight);
-				Dummy.remove();
+				pagesLoaded++;
 			}).always(function() {
 				ajax = false;
 			});
 			PagerBefore.html(LoadingBar);
 		}
 	}
-	$(window).scroll(InfiniteScroll);
+	
+	//use the helper <span> to update the url 
+	function updateUrl() {
+		var page = $('li.Item:inview', DataList).last().find('span.ScrollMarker').data('page');
+		var newState = discussionUrl + '/p' + ((page !== null) ? page : 1);
+		if (newState != url)
+			{history.replaceState(null, null, newState);}
+		url = newState;
+	}
+	
+	$(window).scroll(infiniteScroll);
 	//trigger for short content
-	InfiniteScroll();
+	infiniteScroll();
+
+	
 	//give users the ability to reply on very long topics
 	$('#EndInfiniteScroll').click(function(e) {
 		e.preventDefault();

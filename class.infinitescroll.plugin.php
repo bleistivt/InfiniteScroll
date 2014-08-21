@@ -17,14 +17,29 @@ class InfiniteScroll extends Gdn_Plugin {
 		if(!C('Plugins.InfiniteScroll.Discussion', true))
 			return;
 		$this->Ressources($Sender);
+		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
+		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Discussion->CountComments);
+		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['Page']);//todo?
+		$Sender->AddDefinition('InfiniteScroll_PerPage', intval(C('Vanilla.Comments.PerPage', 30)));
+		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Data['Discussion']->Url);
+		$Sender->AddDefinition('InfiniteScroll_ProgressBg',
+			C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'));
 		//Add the reply button
-		$Sender->AddAsset('Content', Anchor('Reply', '#Form_Comment',
+		$Sender->AddAsset('Content', Anchor('Reply', '#Form_Comment',//todo
 			array(
 				'id' => 'EndInfiniteScroll',
 				'class' => 'Button BigButton Primary',
 				'style' => 'position:fixed;bottom:0;right:10px;display:none;'
 			))
 		);
+	}
+	
+	public function DiscussionController_AfterCommentBody_Handler($Sender) {
+		if(C('Plugins.InfiniteScroll.Discussion', true))
+			echo Wrap('', 'span', array(
+				'class' => 'ScrollMarker',
+				'data-page' => $Sender->Data['Page']
+			));
 	}
 	
 	public function DiscussionsController_Render_Before($Sender) {
@@ -42,6 +57,7 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Session = Gdn::Session();
 		if ($Session->IsValid() && !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
 			return;
+		$Sender->AddJsFile($this->GetResource('js/nanobar.min.js', false, false));
 		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
 	}
 	
@@ -81,9 +97,65 @@ class InfiniteScroll extends Gdn_Plugin {
 				'Control' => 'CheckBox',
 				'LabelCode' => 'Enable on discussion lists',
 				'Default' => C('Plugins.InfiniteScroll.DiscussionList', true)
-			)
+			),
+			'Plugins.InfiniteScroll.Header' => array(
+				'Control' => 'CheckBox',
+				'LabelCode' => 'Show a fixed header for easier navigation',
+				'Description' => T('InfiniteScroll.HeaderDesc', 'When scrolling down, the discussion title and a progress bar to track how far you are into a discussion will be shown in a header. The appearance of it can be altered using the options below.'),
+				'Default' => C('Plugins.InfiniteScroll.Header', true)
+			),
+			'Plugins.InfiniteScroll.ProgressColor' => array(
+				'Control' => 'textbox',
+				'LabelCode' => 'Progress Bar Color',
+				'Description' => T('InfiniteScroll.ProgColorDesc', 'Define the color of the progressbar on the top to match your theme. Can be any CSS color, e.g. red, #ff0000, rgba(255, 0, 0, 1)...'),
+				'Default' => C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'),
+				'Options' => array('maxlength' => '35', 'style' => 'width:180px;')
+			),
+			'Plugins.InfiniteScroll.HeaderBg' => array(
+				'Control' => 'textbox',
+				'LabelCode' => 'Header Background Color',
+				'Default' => C('Plugins.InfiniteScroll.HeaderBg', '#fff'),
+				'Options' => array('maxlength' => '35', 'style' => 'width:180px;')
+			),
+			'Plugins.InfiniteScroll.LineColor' => array(
+				'Control' => 'textbox',
+				'LabelCode' => 'Line and Shadow Color',
+				'Default' => C('Plugins.InfiniteScroll.LineColor', '#ccc'),
+				'Options' => array('maxlength' => '35', 'style' => 'width:180px;')
+			),
+			'Plugins.InfiniteScroll.FixedPanel' => array(
+				'Control' => 'CheckBox',
+				'LabelCode' => 'Fixiate the Panel',
+				'Description' => T('InfiniteScroll.FixedPanelDesc', 'This simply applies a "position: fixed;" to the Panel and makes some adjusments. This should be tested first, as it may require changes to your theme to work.'),
+				'Default' => C('Plugins.InfiniteScroll.FixedPanel', false)
+			),
 		));
 		$Conf->RenderAll();
+	}
+	
+	//Converts a (numeric) CSS color to rgba representation
+	private function ToRgba($Color, $Opacity) {
+		if ($Color == 'transparent')
+			return 'transparent';
+		$Color = str_ireplace(array('black', 'white'), array('#000', '#fff'), $Color);
+		if (strpos($Color, 'rgba') !== false) {
+			$A = floatval(substr($Color, strrpos($Color, ',') + 1));
+			$Color = substr($Color, 0, strrpos($Color, ','));
+			$Opacity = number_format((float)($Opacity * $A), 3, '.', '');
+			return $Color.', '.$Opacity.')';
+		} elseif (strpos($Color, 'rgb') !== false) {
+			$Color = substr($Color, 0, strrpos($Color, ')'));
+			$Color = str_ireplace('rgb', 'rgba', $Color);
+			return $Color.', '.$Opacity.')';
+		} elseif (strpos($Color, '#') !== false) {
+			$regex = '/^\s*#([a-f0-9]{1,2})([a-f0-9]{1,2})([a-f0-9]{1,2})\s*$/i';
+			preg_match($regex, $Color, $m);
+			foreach ($m as &$col)
+				$col = hexdec($col);
+			return 'rgba('.$m[1].', '.$m[2].', '.$m[3].', '.$Opacity.')';
+		} else {
+			return $Color;
+		}
 	}
 
 }

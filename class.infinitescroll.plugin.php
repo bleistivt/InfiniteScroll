@@ -18,21 +18,28 @@ class InfiniteScroll extends Gdn_Plugin {
 			return;
 		$this->Ressources($Sender);
 		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
+		$Sender->AddDefinition('InfiniteScroll_Header', C('Plugins.InfiniteScroll.Header', true));
+		$Sender->AddDefinition('InfiniteScroll_FixedPanel', C('Plugins.InfiniteScroll.FixedPanel', false));
 		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Discussion->CountComments);
 		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['Page']);
-		$Sender->AddDefinition('InfiniteScroll_Pages', CalculateNumberOfPages(//todo
+		$Sender->AddDefinition('InfiniteScroll_Pages', CalculateNumberOfPages(
 			$Sender->Discussion->CountComments, C('Vanilla.Comments.PerPage', 30)));
 		$Sender->AddDefinition('InfiniteScroll_PerPage', intval(C('Vanilla.Comments.PerPage', 30)));
 		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Data['Discussion']->Url);
 		$Sender->AddDefinition('InfiniteScroll_ProgressBg',
 			C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'));
-		//Add the reply button
-		$Sender->AddAsset('Content', Anchor('Reply', '#Form_Comment',//todo
-			array(
-				'id' => 'EndInfiniteScroll',
-				'class' => 'Button BigButton Primary',
-				'style' => 'position:fixed;bottom:0;right:10px;display:none;'
-			))
+		//header
+		if (C('Plugins.InfiniteScroll.Header', true)) {
+			$Controls = Anchor('&#x25b2;', '#', array('id' => 'InfScrollJTT'))
+				.Anchor('&#x25bc;', '#', array('id' => 'InfScrollJTB'));
+			$Sender->AddAsset('Foot', Wrap(
+				Wrap($Controls, 'div', array('class' => 'InfScrollControls')),
+				'div', array('class' => 'InfScrollHeader')
+			));
+		}
+		//loading bar
+		$Sender->AddAsset('Foot', Wrap('', 'span',
+			array('id' => 'PageProgress', 'class' => 'Progress'))
 		);
 	}
 	
@@ -72,9 +79,10 @@ class InfiniteScroll extends Gdn_Plugin {
 			return;
 		$Sender->AddJsFile($this->GetResource('js/nanobar.min.js', false, false));
 		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
+		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));;
 	}
 	
-	//preference checkbox
+	//user preference checkbox
 	public function ProfileController_EditMyAccountAfter_Handler($Sender) {
 		$Session = Gdn::Session();
 		$checked = ($this->GetUserMeta($Session->UserID, 'Enable', true, true))
@@ -164,7 +172,7 @@ class InfiniteScroll extends Gdn_Plugin {
 			$regex = '/^\s*#([a-f0-9]{1,2})([a-f0-9]{1,2})([a-f0-9]{1,2})\s*$/i';
 			preg_match($regex, $Color, $m);
 			foreach ($m as &$col)
-				$col = hexdec($col);
+				$col = hexdec(substr($col.$col, 0, 2));
 			return 'rgba('.$m[1].', '.$m[2].', '.$m[3].', '.$Opacity.')';
 		} else {
 			return $Color;

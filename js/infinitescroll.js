@@ -13,7 +13,6 @@ $.extend($.expr[':'], {
 
 jQuery(function($) {
 	var ajax; //true if new content is being loaded right now
-	var stopped; //true if the reply button was clicked
 	var pagesLoaded = 1;
 	var countComments = gdn.definition('InfiniteScroll_CountComments');
 	var perPage = gdn.definition('InfiniteScroll_PerPage');
@@ -21,36 +20,47 @@ jQuery(function($) {
 	var inDiscussion = gdn.definition('InfiniteScroll_InDiscussion', false);
 	var url = gdn.definition('InfiniteScroll_Url', false);
 	var discussionUrl = url;
+	var pagerAfterHidden, pagerBeforeHidden;
 	var LoadingBar = $('<span class="Progress"></span>');
 	var Dummy = $('<div/>');
 	var LastInview;
 	
 	//selector for default theme and vanilla-bootstrap
 	var DataListSelector = '#Content ul.DataList, main.page-content ul.DataList';
-	var DataList = $(DataListSelector);
-	var MessageList = $('div.MessageList.Discussion');
-	var Content = $('#Content, main.page-content')
+	var ContentSelector = '#Content, main.page-content';
+	var NavIndex = $('#NavIndex');//todo
+	var Panel = $('#Panel')
+	var panelTop = $('#Panel').offset().top;
+	var DataList, MessageList, Content, CommentForm;
 	
-	if ($('.Pager').length > 0)
-		$('#EndInfiniteScroll').show();//todo
-	//hide the pagers on both ends
-	if ($('#PagerAfter a.Next').length === 0) {
-		$('#PagerAfter').hide();
-		var pagerAfterhidden = true;
-	}
-	if ($('#PagerBefore a.Previous').length === 0) {
-		$('#PagerBefore').hide();
-		var pagerBeforehidden = true;
-	}
-	
-	//to prevent page jumping on short content, extend the content area
-	if (!(pagerBeforehidden && pagerAfterhidden) && inDiscussion) {
-		var dummyHeight = $(window).height() - (Content.position().top + Content.outerHeight());
-		if (dummyHeight > 0) {
-			Dummy.css('min-height', dummyHeight);
-			Content.prepend(Dummy);
+	function preparation() {
+		pagerAfterHidden = pagerBeforeHidden = false;
+		DataList = $(DataListSelector);
+		MessageList = $('div.MessageList.Discussion');
+		Content = $(ContentSelector);
+		CommentForm = Content.find('.CommentForm');
+		//hide the pagers on both ends
+		if ($('#PagerAfter a.Next').length === 0) {
+			$('#PagerAfter').hide();
+			pagerAfterHidden = true;
 		}
+		if ($('#PagerBefore a.Previous').length === 0) {
+			$('#PagerBefore').hide();
+			pagerBeforeHidden = true;
+		}
+		//to prevent page jumping on short content, extend the content area
+		if (!(pagerBeforeHidden && pagerAfterHidden) && inDiscussion) {
+			var dummyHeight = $(window).height() - (Content.position().top + Content.outerHeight());
+			if (dummyHeight > 0) {
+				Dummy.css('min-height', dummyHeight);
+				Content.prepend(Dummy);
+			}
+		}
+		//don't show the comment form (yet)
+		if (!pagerAfterHidden)
+			CommentForm.hide();
 	}
+	preparation();
 	
 	//create the header and progress bar
 	if (inDiscussion) {
@@ -58,14 +68,15 @@ jQuery(function($) {
 			bg: gdn.definition('InfiniteScroll_ProgressBg'),
 			id: 'ProgressBar'
 		});
+		if (gdn.definition('InfiniteScroll_Header'));
 	}
 	
 	function infiniteScroll() {
 		if (discussionUrl)
 			updateUrl();
 		if (inDiscussion)
-			updateProgressBar();
-		if (ajax || stopped)
+			updateIndex();
+		if (ajax)
 			return;
 		var PagerAfterA = $('#PagerAfter:inview a.Next');
 		var PagerBeforeA = $('#PagerBefore:inview a.Previous');
@@ -81,10 +92,12 @@ jQuery(function($) {
 					.appendTo(DataList)
 					.effect('highlight', {}, 'slow');
 				//extract the pager if it is not the last
-				if ($('#PagerAfter a.Next', data).length > 0)
+				if ($('#PagerAfter a.Next', data).length > 0) {
 					PagerAfter.replaceWith($('#PagerAfter', data));
-				else
+				} else {
 					PagerAfter.remove();
+					CommentForm.show();
+				}
 				pagesLoaded++;
 			}).always(function() {
 				//allow new requests, even if this request failed somehow
@@ -121,9 +134,10 @@ jQuery(function($) {
 		}
 	}
 	
-	//use the helper <span> to update the url 
 	function updateUrl() {
+		//last comment that is visible in the viewport
 		LastInview = $('li.Item:inview', DataList).last()
+		//use the helper <span> to update the url 
 		var page = LastInview.find('span.ScrollMarker').data('page');
 		var newState = discussionUrl + '/p' + ((page !== null) ? page : 1);
 		if (newState != url)
@@ -131,23 +145,64 @@ jQuery(function($) {
 		url = newState;
 	}
 	
-	function updateProgressBar() {
+	function updateIndex() {
 		if (!LastInview)
 			LastInview = $('li.Item:inview', DataList).last();
+		//calculate the actual index of last comment visible in viewport
 		var index = pagesBefore * perPage + LastInview.index() + 1;
+		NavIndex.text(index);
+		//prevent nanobar-bug (also prevent the bar from disappearing completely)
 		ProgressBar.go(index / countComments * 99.9);
+	}
+	
+	function jumpToEnd(direction) {
+		//check if we can just scroll
+		if (pagesLoaded == gdn.definition('InfiniteScroll_Pages'))
+			var full = true;
+		if (!direction && (pagerBeforeHidden || full)) {
+			$('html, body').animate({scrollTop: 0}, 400);
+			return;
+		} else if (direction && (pagerAfterHidden || full)) {
+			$('html, body').animate({scrollTop: $('#Form_Comment').offset().top}, 400);
+			return;
+		}
+		if (ajax)
+			return;
+		ajax = true; //block any other requests
+		var pageNo = (direction) ? gdn.definition('InfiniteScroll_Pages') : 1;
+		Content.css('opacity', 0);
+		$('#PageProgress').show();
+		$.get(discussionUrl + '/p' + pageNo, function(data) {
+				Content.replaceWith($(ContentSelector, data));
+				preparation();
+				pagesBefore = pageNo - 1;
+				if (!direction)
+					$('html, body').animate({scrollTop: 0}, 400);
+				else
+					$('html, body').animate({scrollTop: $('#Form_Comment').offset().top}, 400);
+				pagesLoaded = 1;
+		}).always(function() {
+			ajax = false;
+			Content.css('opacity', 1);
+			$('#PageProgress').hide();
+			infiniteScroll();
+		});
 	}
 	
 	$(window).scroll(infiniteScroll);
 	//trigger for short content
 	infiniteScroll();
-
 	
-	//give users the ability to reply on very long topics
-	$('#EndInfiniteScroll').click(function(e) {
-		e.preventDefault();
-		stopped = true;
-		$('html, body').animate({scrollTop: $('#Form_Comment').offset().top}, 400);
-		$(this).fadeOut();
-	});
+	if (gdn.definition('InfiniteScroll_FixedPanel'))
+		$(window).scroll(function () {
+			var st = $(this).scrollTop();
+			if (st >= panelTop)
+				Panel.addClass('InfScrollFixed');
+			else
+				Panel.removeClass('InfScrollFixed');
+		});
+	
+	$('#InfScrollJTT').click(function(e) {e.preventDefault(); jumpToEnd(false)});
+	$('#InfScrollJTB').click(function(e) {e.preventDefault(); jumpToEnd(true)});
+
 });

@@ -15,11 +15,15 @@ jQuery(function($) {
 	var ajax; //true if new content is being loaded right now
 	var stopped; //true if the reply button was clicked
 	var pagesLoaded = 1;
-	var InDiscussion = gdn.definition('InfiniteScroll_InDiscussion', false);
-	var url = gdn.definition('InfiniteScroll_Url');
+	var countComments = gdn.definition('InfiniteScroll_CountComments');
+	var perPage = gdn.definition('InfiniteScroll_PerPage');
+	var pagesBefore = gdn.definition('InfiniteScroll_Page') - 1;
+	var inDiscussion = gdn.definition('InfiniteScroll_InDiscussion', false);
+	var url = gdn.definition('InfiniteScroll_Url', false);
 	var discussionUrl = url;
 	var LoadingBar = $('<span class="Progress"></span>');
 	var Dummy = $('<div/>');
+	var LastInview;
 	
 	//selector for default theme and vanilla-bootstrap
 	var DataListSelector = '#Content ul.DataList, main.page-content ul.DataList';
@@ -40,7 +44,7 @@ jQuery(function($) {
 	}
 	
 	//to prevent page jumping on short content, extend the content area
-	if (!(pagerBeforehidden && pagerAfterhidden) && InDiscussion) {
+	if (!(pagerBeforehidden && pagerAfterhidden) && inDiscussion) {
 		var dummyHeight = $(window).height() - (Content.position().top + Content.outerHeight());
 		if (dummyHeight > 0) {
 			Dummy.css('min-height', dummyHeight);
@@ -49,17 +53,18 @@ jQuery(function($) {
 	}
 	
 	//create the header and progress bar
-	if (InDiscussion) {
+	if (inDiscussion) {
 		var ProgressBar = new Nanobar({
 			bg: gdn.definition('InfiniteScroll_ProgressBg'),
 			id: 'ProgressBar'
 		});
-		//ProgressBar.go(99);
 	}
 	
 	function infiniteScroll() {
-		if (InDiscussion)
+		if (discussionUrl)
 			updateUrl();
+		if (inDiscussion)
+			updateProgressBar();
 		if (ajax || stopped)
 			return;
 		var PagerAfterA = $('#PagerAfter:inview a.Next');
@@ -108,6 +113,7 @@ jQuery(function($) {
 				//the scroll position needs to be adjusted when prepending content
 				$(document).scrollTop(OldScroll + $(document).height() - OldHeight);
 				pagesLoaded++;
+				pagesBefore--;
 			}).always(function() {
 				ajax = false;
 			});
@@ -117,11 +123,19 @@ jQuery(function($) {
 	
 	//use the helper <span> to update the url 
 	function updateUrl() {
-		var page = $('li.Item:inview', DataList).last().find('span.ScrollMarker').data('page');
+		LastInview = $('li.Item:inview', DataList).last()
+		var page = LastInview.find('span.ScrollMarker').data('page');
 		var newState = discussionUrl + '/p' + ((page !== null) ? page : 1);
 		if (newState != url)
 			{history.replaceState(null, null, newState);}
 		url = newState;
+	}
+	
+	function updateProgressBar() {
+		if (!LastInview)
+			LastInview = $('li.Item:inview', DataList).last();
+		var index = pagesBefore * perPage + LastInview.index() + 1;
+		ProgressBar.go(index / countComments * 99.9);
 	}
 	
 	$(window).scroll(infiniteScroll);

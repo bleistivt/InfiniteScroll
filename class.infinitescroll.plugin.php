@@ -19,7 +19,9 @@ class InfiniteScroll extends Gdn_Plugin {
 		$this->Ressources($Sender);
 		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
 		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Discussion->CountComments);
-		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['Page']);//todo?
+		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['Page']);
+		$Sender->AddDefinition('InfiniteScroll_Pages', CalculateNumberOfPages(//todo
+			$Sender->Discussion->CountComments, C('Vanilla.Comments.PerPage', 30)));
 		$Sender->AddDefinition('InfiniteScroll_PerPage', intval(C('Vanilla.Comments.PerPage', 30)));
 		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Data['Discussion']->Url);
 		$Sender->AddDefinition('InfiniteScroll_ProgressBg',
@@ -34,6 +36,18 @@ class InfiniteScroll extends Gdn_Plugin {
 		);
 	}
 	
+	public function DiscussionsController_Render_Before($Sender) {
+		if(C('Plugins.InfiniteScroll.DiscussionList', true))
+			$this->Ressources($Sender);
+	}
+	
+	public function CategoriesController_Render_Before($Sender) {
+		if(!C('Plugins.InfiniteScroll.DiscussionList', true))
+			return;
+		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Category->Url);
+		$this->Ressources($Sender);
+	}
+	
 	public function DiscussionController_AfterCommentBody_Handler($Sender) {
 		if(C('Plugins.InfiniteScroll.Discussion', true))
 			echo Wrap('', 'span', array(
@@ -42,14 +56,13 @@ class InfiniteScroll extends Gdn_Plugin {
 			));
 	}
 	
-	public function DiscussionsController_Render_Before($Sender) {
-		if(C('Plugins.InfiniteScroll.DiscussionList', true))
-			$this->Ressources($Sender);
-	}
-	
-	public function CategoriesController_Render_Before($Sender) {
-		if(C('Plugins.InfiniteScroll.DiscussionList', true))
-			$this->Ressources($Sender);
+	public function CategoriesController_AfterDiscussionTitle_Handler($Sender) {
+		if(!C('Plugins.InfiniteScroll.DiscussionList', true))
+			return;
+		echo Wrap('', 'span', array(
+			'class' => 'ScrollMarker',
+			'data-page' => $Sender->Data['_Page']
+		));
 	}
 	
 	//check user preferences and include js

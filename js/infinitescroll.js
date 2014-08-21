@@ -24,15 +24,15 @@ jQuery(function($) {
 	var LoadingBar = $('<span class="Progress"></span>');
 	var Dummy = $('<div/>');
 	var LastInview;
-	
+
 	//selector for default theme and vanilla-bootstrap
 	var DataListSelector = '#Content ul.DataList, main.page-content ul.DataList';
 	var ContentSelector = '#Content, main.page-content';
 	var NavIndex = $('#NavIndex');
-	var Panel = $('#Panel')
+	var Panel = $('#Panel, aside.page-sidebar')
 	var panelTop = Panel.offset().top;
 	var DataList, MessageList, Content, CommentForm;
-	
+
 	function preparation() {
 		pagerAfterHidden = pagerBeforeHidden = false;
 		DataList = $(DataListSelector);
@@ -61,7 +61,7 @@ jQuery(function($) {
 			CommentForm.hide();
 	}
 	preparation();
-	
+
 	//create the progress bar
 	if (inDiscussion) {
 		var ProgressBar = new Nanobar({
@@ -69,7 +69,7 @@ jQuery(function($) {
 			id: 'ProgressBar'
 		});
 	}
-	
+
 	function infiniteScroll() {
 		if (discussionUrl)
 			updateUrl();
@@ -132,18 +132,18 @@ jQuery(function($) {
 			PagerBefore.html(LoadingBar);
 		}
 	}
-	
+
 	function updateUrl() {
 		//last comment that is visible in the viewport
 		LastInview = $('li.Item:inview', DataList).last()
-		//use the helper <span> to update the url 
+		//use the helper <span> to update the url
 		var page = LastInview.find('span.ScrollMarker').data('page');
 		var newState = discussionUrl + '/p' + ((page !== null) ? page : 1);
 		if (newState != url)
 			{history.replaceState(null, null, newState);}
 		url = newState;
 	}
-	
+
 	function updateIndex() {
 		if (!LastInview)
 			LastInview = $('li.Item:inview', DataList).last();
@@ -153,10 +153,10 @@ jQuery(function($) {
 		//prevent nanobar-bug (also prevent the bar from disappearing completely)
 		ProgressBar.go(index / countComments * 99.9);
 	}
-	
+
 	function jumpToEnd(direction) {
 		//check if we can just scroll
-		if (pagesLoaded == gdn.definition('InfiniteScroll_Pages'))
+		if (pagesLoaded == gdn.definition('InfiniteScroll_Pages', 1))
 			var full = true;
 		if (!direction && (pagerBeforeHidden || full)) {
 			$('html, body').animate({scrollTop: 0}, 400);
@@ -169,7 +169,7 @@ jQuery(function($) {
 			return;
 		ajax = true;
 		//true = jump to bottom, false = jump to top
-		var pageNo = (direction) ? gdn.definition('InfiniteScroll_Pages') : 1;
+		var pageNo = (direction) ? gdn.definition('InfiniteScroll_Pages', 1) : 1;
 		Content.css('opacity', 0);
 		$('#PageProgress').show();
 		$.get(discussionUrl + '/p' + pageNo, function(data) {
@@ -189,12 +189,12 @@ jQuery(function($) {
 			infiniteScroll();
 		});
 	}
-	
+
 	$(window).scroll(infiniteScroll);
 	//trigger for short content
 	infiniteScroll();
-	
-	if (gdn.definition('InfiniteScroll_FixedPanel')) {
+
+	if (gdn.definition('InfiniteScroll_FixedPanel', false)) {
 		//make the viewport "pick up" the Panel when scrolling down
 		$(window).scroll(function () {
 			var st = $(this).scrollTop();

@@ -12,9 +12,10 @@ $PluginInfo['InfiniteScroll'] = array(
 );
 
 class InfiniteScroll extends Gdn_Plugin {
-	
+
 	public function Discussioncontroller_Render_Before($Sender) {
-		if(!C('Plugins.InfiniteScroll.Discussion', true))
+		if(!(C('Plugins.InfiniteScroll.Discussion', true)
+			&& $this->GetUserMeta($Session->UserID, 'Enable', true, true)))
 			return;
 		$this->Ressources($Sender);
 		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
@@ -39,19 +40,19 @@ class InfiniteScroll extends Gdn_Plugin {
 			array('id' => 'PageProgress', 'class' => 'Progress'))
 		);
 	}
-	
+
 	public function DiscussionsController_Render_Before($Sender) {
 		if(C('Plugins.InfiniteScroll.DiscussionList', true))
 			$this->Ressources($Sender);
 	}
-	
+
 	public function CategoriesController_Render_Before($Sender) {
 		if(!C('Plugins.InfiniteScroll.DiscussionList', true))
 			return;
 		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Category->Url);
 		$this->Ressources($Sender);
 	}
-	
+
 	public function DiscussionController_AfterCommentBody_Handler($Sender) {
 		if(C('Plugins.InfiniteScroll.Discussion', true))
 			echo Wrap('', 'span', array(
@@ -59,7 +60,7 @@ class InfiniteScroll extends Gdn_Plugin {
 				'data-page' => $Sender->Data['Page']
 			));
 	}
-	
+
 	public function CategoriesController_AfterDiscussionTitle_Handler($Sender) {
 		if(!C('Plugins.InfiniteScroll.DiscussionList', true))
 			return;
@@ -68,7 +69,7 @@ class InfiniteScroll extends Gdn_Plugin {
 			'data-page' => $Sender->Data['_Page']
 		));
 	}
-	
+
 	//check user preferences and include js
 	private function Ressources($Sender) {
 		$Session = Gdn::Session();
@@ -83,7 +84,7 @@ class InfiniteScroll extends Gdn_Plugin {
 			.htmlspecialchars(C('Plugins.InfiniteScroll.TextColor', 'rgba(0, 0, 0, 0.5)')).';}';
 		$Sender->Head->AddString('<style type="text/css">'.$Position.$Color.'</style>');
 	}
-	
+
 	//user preference checkbox
 	public function ProfileController_EditMyAccountAfter_Handler($Sender) {
 		$Session = Gdn::Session();
@@ -94,7 +95,7 @@ class InfiniteScroll extends Gdn_Plugin {
 			$Sender->Form->Checkbox('InfiniteScroll', 'Enable Infinite Scrolling', $checked),
 			'li', array('class' => 'InfiniteScroll'));
 	}
-	
+
 	public function UserModel_AfterSave_Handler($Sender) {
 		$FormValues = $Sender->EventArguments['FormPostValues'];
 		$UserID = val('UserID', $FormValues, 0);
@@ -103,7 +104,7 @@ class InfiniteScroll extends Gdn_Plugin {
 		$InfiniteScroll = val('InfiniteScroll', $FormValues, false);
 		$this->SetUserMeta($UserID, 'Enable', $InfiniteScroll);
 	}
-	
+
 	//configuration page
 	public function SettingsController_InfiniteScroll_Create($Sender) {
 		$Sender->Permission('Garden.Settings.Manage');

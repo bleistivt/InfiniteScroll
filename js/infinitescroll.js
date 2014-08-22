@@ -114,7 +114,7 @@ jQuery(function($) {
 				$(DataListSelector, data)
 					.contents()
 					.appendTo(DataList)
-					.effect('highlight', {}, 'slow');
+					.addClass('InfScrollHighlight');
 				//extract the pager if it is not the last
 				if ($('#PagerAfter a.Next', data).length > 0) {
 					PagerAfter.replaceWith($('#PagerAfter', data));
@@ -139,7 +139,7 @@ jQuery(function($) {
 				$(DataListSelector, data)
 					.contents()
 					.prependTo(DataList)
-					.effect("highlight", {}, "slow");
+					.addClass('InfScrollHighlight');
 				//prepend the first post of a discussion
 				$('div.ItemDiscussion', data).appendTo(MessageList);
 				if ($('#PagerBefore a.Previous', data).length > 0)

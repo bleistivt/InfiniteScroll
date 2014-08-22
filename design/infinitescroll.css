@@ -44,3 +44,11 @@
 	right: 49%;
 	display: none;
 }
+@-webkit-keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
+@-moz-keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
+@keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
+.InfScrollHighlight {
+	-webkit-animation:InfScrollHighlight .8s;
+	-moz-animation:InfScrollHighlight .8s;
+	animation:InfScrollHighlight .8s;
+}

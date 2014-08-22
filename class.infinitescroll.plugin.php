@@ -2,7 +2,7 @@
 $PluginInfo['InfiniteScroll'] = array(
 	'Name' => 'Infinite Scroll',
 	'Description' => 'Infinite scrolling for discussions and discussion lists',
-	'Version' => '0.4',
+	'Version' => '0.5',
 	'RequiredApplications' => array('Vanilla' => '2.1'),
 	'SettingsPermission' => 'Garden.Settings.Manage',
 	'SettingsUrl' => '/settings/infinitescroll',
@@ -14,7 +14,7 @@ $PluginInfo['InfiniteScroll'] = array(
 class InfiniteScroll extends Gdn_Plugin {
 
 	public function Discussioncontroller_Render_Before($Sender) {
-		if(!(C('Plugins.InfiniteScroll.Discussion', true)
+		if (!(C('Plugins.InfiniteScroll.Discussion', true)
 			&& $this->GetUserMeta($Session->UserID, 'Enable', true, true)))
 			return;
 		$this->Ressources($Sender);
@@ -43,19 +43,19 @@ class InfiniteScroll extends Gdn_Plugin {
 	}
 
 	public function DiscussionsController_Render_Before($Sender) {
-		if(C('Plugins.InfiniteScroll.DiscussionList', true))
+		if (C('Plugins.InfiniteScroll.DiscussionList', true) && C('Vanilla.Discussions.Layout') != 'table')
 			$this->Ressources($Sender);
 	}
 
 	public function CategoriesController_Render_Before($Sender) {
-		if(!C('Plugins.InfiniteScroll.DiscussionList', true))
+		if (!C('Plugins.InfiniteScroll.DiscussionList', true) || C('Vanilla.Discussions.Layout') == 'table')
 			return;
 		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Category->Url);
 		$this->Ressources($Sender);
 	}
 
 	public function DiscussionController_AfterCommentBody_Handler($Sender) {
-		if(C('Plugins.InfiniteScroll.Discussion', true))
+		if (C('Plugins.InfiniteScroll.Discussion', true))
 			echo Wrap('', 'span', array(
 				'class' => 'ScrollMarker',
 				'data-page' => $Sender->Data['Page']
@@ -63,7 +63,7 @@ class InfiniteScroll extends Gdn_Plugin {
 	}
 
 	public function CategoriesController_AfterDiscussionTitle_Handler($Sender) {
-		if(!C('Plugins.InfiniteScroll.DiscussionList', true))
+		if (!C('Plugins.InfiniteScroll.DiscussionList', true) || C('Vanilla.Discussions.Layout') == 'table')
 			return;
 		echo Wrap('', 'span', array(
 			'class' => 'ScrollMarker',
@@ -76,6 +76,7 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Session = Gdn::Session();
 		if ($Session->IsValid() && !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
 			return;
+		$Sender->AddDefinition('InfiniteScroll_Treshold', intval(C('Plugins.InfiniteScroll.Treshold', 300)));
 		$Sender->AddJsFile($this->GetResource('js/nanobar.min.js', false, false));
 		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
 		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));
@@ -100,7 +101,7 @@ class InfiniteScroll extends Gdn_Plugin {
 	public function UserModel_AfterSave_Handler($Sender) {
 		$FormValues = $Sender->EventArguments['FormPostValues'];
 		$UserID = val('UserID', $FormValues, 0);
-		if(!is_int($UserID) || $UserID <= 0)
+		if (!is_int($UserID) || $UserID <= 0)
 			return;
 		$InfiniteScroll = val('InfiniteScroll', $FormValues, false);
 		$this->SetUserMeta($UserID, 'Enable', $InfiniteScroll);
@@ -120,8 +121,15 @@ class InfiniteScroll extends Gdn_Plugin {
 			),
 			'Plugins.InfiniteScroll.DiscussionList' => array(
 				'Control' => 'CheckBox',
-				'LabelCode' => 'Enable on discussion lists',
+				'LabelCode' => 'Enable on discussion lists (modern discussions layout only)',
 				'Default' => C('Plugins.InfiniteScroll.DiscussionList', true)
+			),
+			'Plugins.InfiniteScroll.Treshold' => array(
+				'Control' => 'textbox',
+				'LabelCode' => 'Treshold',
+				'Description' => T('InfiniteScroll.TresholdDesc', 'Specify (in pixels) how close to the end of the content users have to scroll to trigger loading more.'),
+				'Default' => C('Plugins.InfiniteScroll.Treshold', 300),
+				'Options' => array('maxlength' => '8', 'style' => 'width:180px;')
 			),
 			'Plugins.InfiniteScroll.Nav' => array(
 				'Control' => 'CheckBox',

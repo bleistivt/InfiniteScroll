@@ -24,6 +24,7 @@ jQuery(function($) {
 	var isLastPage, isFirstPage;
 	var LoadingBar = $('<span class="Progress"></span>');
 	var Dummy = $('<div/>');
+	var LastInview;
 	var throttle = 0;
 
 	//selector for default theme and vanilla-bootstrap
@@ -40,12 +41,13 @@ jQuery(function($) {
 		MessageList = $('div.MessageList.Discussion');
 		Content = $(ContentSelector);
 		CommentForm = Content.find('.CommentForm');
+		var checkDom = (page === false);
 		//hide the pagers on both ends
-		if (page == totalPages) {
+		if (page == totalPages || (checkDom && $('#PagerAfter a.Next').length === 0)) {
 			$('#PagerAfter').hide();
 			isLastPage = true;
 		}
-		if (page == 1) {
+		if (page == 1 || (checkDom && $('#PagerBefore a.Previous').length === 0)) {
 			$('#PagerBefore').hide();
 			isFirstPage = true;
 		}
@@ -61,7 +63,7 @@ jQuery(function($) {
 		if (!isLastPage)
 			CommentForm.hide();
 	}
-	preparation(gdn.definition('InfiniteScroll_Page'));
+	preparation(gdn.definition('InfiniteScroll_Page', false));
 
 	//create the progress bar
 	if (inDiscussion) {
@@ -139,7 +141,6 @@ jQuery(function($) {
 		}
 	}
 
-	var LastInview;
 	function updateUrl() {
 		//last comment that is visible in the viewport
 		LastInview = $('li.Item:inview', DataList).last();

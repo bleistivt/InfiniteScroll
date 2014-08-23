@@ -35,7 +35,6 @@ jQuery(function($) {
 		isLastPage, isFirstPage,
 		LoadingBar = $('<span class="Progress"></span>'),
 		Dummy = $('<div/>'),
-		dummylock,
 		LastInview,
 		throttle = 0;
 	//selector for default theme and vanilla-bootstrap
@@ -44,6 +43,7 @@ jQuery(function($) {
 		NavIndex = $('#NavIndex'),
 		Panel = $('#Panel, aside.page-sidebar'),
 		panelTop = Panel.offset().top,
+		panelHeight = Panel.height(),
 		DataList, MessageList, Content, CommentForm;
 
 	function preparation(page) {
@@ -67,7 +67,6 @@ jQuery(function($) {
 			var dummyHeight = $(window).height() -
 				(Content.position().top + Content.outerHeight());
 			if (dummyHeight > 0) {
-				dummylock = true;
 				Dummy.css('min-height', dummyHeight);
 				Content.prepend(Dummy);
 				
@@ -150,7 +149,6 @@ jQuery(function($) {
 				else
 					PagerBefore.remove();
 				Dummy.remove();
-				dummylock = false;
 				//the scroll position needs to be adjusted when prepending content
 				$(document).scrollTop(OldScroll + $(document).height() - OldHeight);
 				pagesLoaded++;
@@ -253,12 +251,8 @@ jQuery(function($) {
 	if (gdn.definition('InfiniteScroll_FixedPanel', false)) {
 		//make the viewport "pick up" the Panel when scrolling down
 		$(window).scroll(function() {
-			if (dummylock) { //prevent pager stutter
-				Panel.removeClass('InfScrollFixed');
-				return;
-			}
 			var st = $(this).scrollTop();
-			if (st >= panelTop)
+			if (st >= panelTop && Content.height() > panelHeight)
 				Panel.addClass('InfScrollFixed');
 			else
 				Panel.removeClass('InfScrollFixed').css('margin-top', 0);

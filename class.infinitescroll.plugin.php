@@ -19,7 +19,6 @@ class InfiniteScroll extends Gdn_Plugin {
 			return;
 		$this->Ressources($Sender);
 		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
-		$Sender->AddDefinition('InfiniteScroll_FixedPanel', C('Plugins.InfiniteScroll.FixedPanel', false));
 		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Discussion->CountComments);
 		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['Page']);
 		$Sender->AddDefinition('InfiniteScroll_Pages', CalculateNumberOfPages(
@@ -77,6 +76,7 @@ class InfiniteScroll extends Gdn_Plugin {
 		if ($Session->IsValid() && !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
 			return;
 		$Sender->AddDefinition('InfiniteScroll_Treshold', intval(C('Plugins.InfiniteScroll.Treshold', 300)));
+		$Sender->AddDefinition('InfiniteScroll_FixedPanel', C('Plugins.InfiniteScroll.FixedPanel', false));
 		$Sender->AddJsFile($this->GetResource('js/nanobar.min.js', false, false));
 		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
 		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));
@@ -134,7 +134,7 @@ class InfiniteScroll extends Gdn_Plugin {
 			'Plugins.InfiniteScroll.Nav' => array(
 				'Control' => 'CheckBox',
 				'LabelCode' => 'Show navigation',
-				'Description' => T('InfiniteScroll.NavDesc', 'This adds a box with 2 Buttons to jump to the top and bottom of the page, so users don\'t have to scroll thorugh endless discussions.'),
+				'Description' => T('InfiniteScroll.NavDesc', 'This adds a box with 2 Buttons to jump to the top and bottom of the page, so users don\'t have to scroll through endless discussions.'),
 				'Default' => C('Plugins.InfiniteScroll.Nav', true)
 			),
 			'Plugins.InfiniteScroll.NavPosition' => array(

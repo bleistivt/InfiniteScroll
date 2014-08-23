@@ -14,7 +14,6 @@
 }
 .InfScrollFixed {
 	position: fixed;
-	max-height: 100%;
 	top: 0;
 }
 .InfScrollFixed .MeBox {
@@ -48,7 +47,7 @@
 @-moz-keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
 @keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
 .InfScrollHighlight {
-	-webkit-animation:InfScrollHighlight .8s;
-	-moz-animation:InfScrollHighlight .8s;
-	animation:InfScrollHighlight .8s;
+	-webkit-animation: InfScrollHighlight .8s;
+	-moz-animation: InfScrollHighlight .8s;
+	animation: InfScrollHighlight .8s;
 }

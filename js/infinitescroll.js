@@ -9,7 +9,7 @@ function infScrollInview(el, offset) {
 	else if (document.documentElement && document.documentElement.clientHeight)
 		wb = wt + document.documentElement.clientHeight;
 	var et = 0, ell = el;
-	while(ell && !isNaN(ell.offsetTop)) {
+	while (ell && !isNaN(ell.offsetTop)) {
 		et += ell.offsetTop;
 		ell = ell.offsetParent;
 	}
@@ -35,6 +35,7 @@ jQuery(function($) {
 		isLastPage, isFirstPage,
 		LoadingBar = $('<span class="Progress"></span>'),
 		Dummy = $('<div/>'),
+		dummylock,
 		LastInview,
 		throttle = 0;
 	//selector for default theme and vanilla-bootstrap
@@ -66,8 +67,10 @@ jQuery(function($) {
 			var dummyHeight = $(window).height() -
 				(Content.position().top + Content.outerHeight());
 			if (dummyHeight > 0) {
+				dummylock = true;
 				Dummy.css('min-height', dummyHeight);
 				Content.prepend(Dummy);
+				
 			}
 		}
 		//don't show the comment form (yet)
@@ -147,6 +150,7 @@ jQuery(function($) {
 				else
 					PagerBefore.remove();
 				Dummy.remove();
+				dummylock = false;
 				//the scroll position needs to be adjusted when prepending content
 				$(document).scrollTop(OldScroll + $(document).height() - OldHeight);
 				pagesLoaded++;
@@ -234,10 +238,25 @@ jQuery(function($) {
 	$(window).scroll(infiniteScroll);
 	//trigger for short content
 	infiniteScroll();
-
+	
+	var difference, track, panelScrollActive;
+	function panelScrollInit() {
+		difference = Panel.height() - $(window).height();
+		track = 0;
+		Panel.css('margin-top', 0);
+		panelScrollActive = false;
+		if (difference > 0) {
+			difference += 30;
+			panelScrollActive = true;
+		}
+	}
 	if (gdn.definition('InfiniteScroll_FixedPanel', false)) {
 		//make the viewport "pick up" the Panel when scrolling down
-		$(window).scroll(function () {
+		$(window).scroll(function() {
+			if (dummylock) { //prevent pager stutter
+				Panel.removeClass('InfScrollFixed');
+				return;
+			}
 			var st = $(this).scrollTop();
 			if (st >= panelTop)
 				Panel.addClass('InfScrollFixed');
@@ -245,24 +264,24 @@ jQuery(function($) {
 				Panel.removeClass('InfScrollFixed').css('margin-top', 0);
 		});
 		//if the panel is too high for the viewport, add "fake" scrolling
-		var difference = Panel.height() - $(window).height();
-		if (difference > 0) {
-			difference += 50;
-			var track = 0;
-			Panel.on('DOMMouseScroll mousewheel', function(e) {
-				if (!Panel.hasClass('InfScrollFixed'))
-					return false;
-				if ((e.originalEvent.detail > 0 || e.originalEvent.wheelDelta < 0) &&
-					track > -difference) {
-					track -= 50;
-					Panel.stop().animate({marginTop: track + 'px'}, 'fast', 'easeOutCirc');
-				} else if (track < 0) {
-					track += 50;
-					Panel.stop().animate({marginTop: track + 'px'}, 'fast', 'easeOutCirc');
-				}
+		$(window).resize(panelScrollInit);
+		panelScrollInit();
+		//overflow: auto; cannot be used as it cuts off the notifications popup
+		Panel.on('DOMMouseScroll mousewheel', function(e) {
+			if (!panelScrollActive)
+				return;
+			if (!Panel.hasClass('InfScrollFixed'))
 				return false;
-			});
-		}
+			if ((e.originalEvent.detail > 0 || e.originalEvent.wheelDelta < 0) &&
+				track > -difference) {
+				track -= (track < 50 - difference) ? 0 : 50;
+				Panel.stop().animate({marginTop: track + 'px'}, 'fast', 'easeOutCirc');
+			} else if (track < 0) {
+				track += (track > -50) ? 0 : 50;
+				Panel.stop().animate({marginTop: track + 'px'}, 'fast', 'easeOutCirc');
+			}
+			return false;
+		});
 	}
 
 	$('#InfScrollJTT').click(function(e) {e.preventDefault(); jumpToEnd(false);});

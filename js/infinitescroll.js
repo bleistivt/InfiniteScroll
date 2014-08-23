@@ -26,6 +26,7 @@ jQuery(function($) {
 		pagesLoaded = 1,
 		pagesBefore = gdn.definition('InfiniteScroll_Page') - 1,
 		totalPages = gdn.definition('InfiniteScroll_Pages', 1),
+		pageNext = pagesBefore + 2,
 		countComments = gdn.definition('InfiniteScroll_CountComments'),
 		perPage = gdn.definition('InfiniteScroll_PerPage'),
 		inDiscussion = gdn.definition('InfiniteScroll_InDiscussion', false),
@@ -52,6 +53,7 @@ jQuery(function($) {
 		MessageList = $('div.MessageList.Discussion');
 		Content = $(ContentSelector);
 		CommentForm = Content.find('.CommentForm');
+		DataList.children().data('page', page);
 		var checkDom = (page === false);
 		//hide the pagers on both ends
 		if (page == totalPages || (checkDom && $('#PagerAfter a.Next').length === 0)) {
@@ -114,9 +116,10 @@ jQuery(function($) {
 			$.get(PagerAfterA.attr('href'), function(data) {
 				//extract and append the content
 				$(DataListSelector, data)
-					.contents()
+					.children()
 					.appendTo(DataList)
-					.addClass('InfScrollHighlight');
+					.addClass('InfScrollHighlight')
+					.data('page', pageNext);
 				//extract the pager if it is not the last
 				if ($('#PagerAfter a.Next', data).length > 0) {
 					PagerAfter.replaceWith($('#PagerAfter', data));
@@ -125,6 +128,7 @@ jQuery(function($) {
 					CommentForm.show();
 				}
 				pagesLoaded++;
+				pageNext++;
 			}).always(function() {
 				//allow new requests, even if this request failed somehow
 				ajax = false;
@@ -139,9 +143,10 @@ jQuery(function($) {
 				var OldHeight = $(document).height();
 				var OldScroll = $(window).scrollTop();
 				$(DataListSelector, data)
-					.contents()
+					.children()
 					.prependTo(DataList)
-					.addClass('InfScrollHighlight');
+					.addClass('InfScrollHighlight')
+					.data('page', pagesBefore);
 				//prepend the first post of a discussion
 				$('div.ItemDiscussion', data).appendTo(MessageList);
 				if ($('#PagerBefore a.Previous', data).length > 0)
@@ -163,8 +168,8 @@ jQuery(function($) {
 	function updateUrl() {
 		//last comment that is visible in the viewport
 		LastInview = $('li.Item:infscrollinview', DataList).last();
-		//use the helper <span> to update the url
-		var page = LastInview.find('span.ScrollMarker').data('page');
+		//use the added data to update the url
+		var page = LastInview.data('page');
 		var newState = discussionUrl + '/p' + ((page !== null) ? page : 1);
 		if (newState != url)
 			{history.replaceState(null, null, newState);}
@@ -212,6 +217,7 @@ jQuery(function($) {
 				preparation((direction) ? totalPages : 1);
 				pagesLoaded = 1;
 				pagesBefore = pageNo - 1;
+				pageNext = pagesBefore + 2;
 				if (!direction)
 					$('html, body').animate({scrollTop: 0},
 						400, 'swing', function() {

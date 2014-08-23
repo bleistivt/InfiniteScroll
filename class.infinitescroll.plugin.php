@@ -2,7 +2,7 @@
 $PluginInfo['InfiniteScroll'] = array(
 	'Name' => 'Infinite Scroll',
 	'Description' => 'Infinite scrolling for discussions and discussion lists',
-	'Version' => '0.5',
+	'Version' => '0.6',
 	'RequiredApplications' => array('Vanilla' => '2.1'),
 	'SettingsPermission' => 'Garden.Settings.Manage',
 	'SettingsUrl' => '/settings/infinitescroll',
@@ -49,25 +49,11 @@ class InfiniteScroll extends Gdn_Plugin {
 	public function CategoriesController_Render_Before($Sender) {
 		if (!C('Plugins.InfiniteScroll.DiscussionList', true) || C('Vanilla.Discussions.Layout') == 'table')
 			return;
+		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['_Page']);
+		$Sender->AddDefinition('InfiniteScroll_Pages', CalculateNumberOfPages(
+			$Sender->Data['Category']->CountDiscussions, C('Vanilla.Discussions.PerPage', 30)));
 		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Category->Url);
 		$this->Ressources($Sender);
-	}
-
-	public function DiscussionController_AfterCommentBody_Handler($Sender) {
-		if (C('Plugins.InfiniteScroll.Discussion', true))
-			echo Wrap('', 'span', array(
-				'class' => 'ScrollMarker',
-				'data-page' => $Sender->Data['Page']
-			));
-	}
-
-	public function CategoriesController_AfterDiscussionTitle_Handler($Sender) {
-		if (!C('Plugins.InfiniteScroll.DiscussionList', true) || C('Vanilla.Discussions.Layout') == 'table')
-			return;
-		echo Wrap('', 'span', array(
-			'class' => 'ScrollMarker',
-			'data-page' => $Sender->Data['_Page']
-		));
 	}
 
 	//check user preferences and include js

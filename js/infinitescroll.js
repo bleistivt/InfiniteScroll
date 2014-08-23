@@ -34,7 +34,7 @@ jQuery(function($) {
 		url = gdn.definition('InfiniteScroll_Url', false),
 		discussionUrl = url,
 		isLastPage, isFirstPage,
-		LoadingBar = $('<span class="Progress"></span>'),
+		LoadingBar = $('<span class="Progress"/>'),
 		Dummy = $('<div/>'),
 		LastInview,
 		throttle = 0;
@@ -118,7 +118,9 @@ jQuery(function($) {
 					.children()
 					.appendTo(DataList)
 					.addClass('InfScrollHighlight')
-					.data('page', pageNext);
+					.data('page', pageNext)
+					.first()
+					.prepend('<a id="Page_' + pageNext + '"/>');
 				//extract the pager if it is not the last
 				if ($('#PagerAfter a.Next', data).length > 0) {
 					PagerAfter.replaceWith($('#PagerAfter', data));
@@ -145,7 +147,9 @@ jQuery(function($) {
 					.children()
 					.prependTo(DataList)
 					.addClass('InfScrollHighlight')
-					.data('page', pagesBefore);
+					.data('page', pagesBefore)
+					.first()
+					.prepend('<a id="Page_' + pagesBefore + '"/>');
 				//prepend the first post of a discussion
 				$('div.ItemDiscussion', data).appendTo(MessageList);
 				if ($('#PagerBefore a.Previous', data).length > 0)
@@ -179,7 +183,11 @@ jQuery(function($) {
 		if (!LastInview)
 			LastInview = $('li.Item:infscrollinview', DataList).last();
 		//calculate the actual index of last comment visible in viewport
-		var index = pagesBefore * perPage + LastInview.index() + 1;
+		var index = pagesBefore * perPage + LastInview.index() + 2;
+		if (LastInview.length === 0) {
+			var wt = window.pageYOffset || document.documentElement.scrollTop;
+			index = (wt > CommentForm.offset().top) ? countComments : 1;
+		}
 		NavIndex.text(index);
 		//prevent nanobar-bug (also prevent the bar from disappearing completely)
 		ProgressBar.go(index / countComments * 99.9);
@@ -261,10 +269,8 @@ jQuery(function($) {
 		panelScrollInit();
 		//overflow: auto; cannot be used as it cuts off the notifications popup
 		Panel.on('DOMMouseScroll mousewheel', function(e) {
-			if (!panelScrollActive)
+			if (!panelScrollActive || !Panel.hasClass('InfScrollFixed'))
 				return;
-			if (!Panel.hasClass('InfScrollFixed'))
-				return false;
 			if ((e.originalEvent.detail > 0 || e.originalEvent.wheelDelta < 0) &&
 				track > -difference) {
 				track -= (track < 50 - difference) ? 0 : 50;

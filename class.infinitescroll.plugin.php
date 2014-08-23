@@ -19,7 +19,7 @@ class InfiniteScroll extends Gdn_Plugin {
 			return;
 		$this->Ressources($Sender);
 		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
-		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Discussion->CountComments);
+		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Discussion->CountComments + 1);
 		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['Page']);
 		$Sender->AddDefinition('InfiniteScroll_Pages', CalculateNumberOfPages(
 			$Sender->Discussion->CountComments, C('Vanilla.Comments.PerPage', 30)));
@@ -30,8 +30,9 @@ class InfiniteScroll extends Gdn_Plugin {
 		//header
 		if (C('Plugins.InfiniteScroll.Nav', true)) {
 			$Controls = Anchor('&#x25b2;', '#', array('id' => 'InfScrollJTT'))
-				.Wrap(' ', 'span', array('id' => 'NavIndex'))
-				.Wrap('/'.$Sender->Discussion->CountComments, 'span', array('class' => 'small'))
+				.Wrap(Wrap(' ', 'span', array('id' => 'NavIndex'))
+					.Wrap('/'.($Sender->Discussion->CountComments + 1), 'span', array('class' => 'small')),
+					'span', array('id' => 'InfScrollPageCount'))
 				.Anchor('&#x25bc;', '#', array('id' => 'InfScrollJTB'));
 			$Sender->AddAsset('Foot',Wrap($Controls, 'div', array('id' => 'InfScrollNav')));
 		}

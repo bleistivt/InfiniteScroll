@@ -14,8 +14,8 @@ $PluginInfo['InfiniteScroll'] = array(
 class InfiniteScroll extends Gdn_Plugin {
 
 	public function Discussioncontroller_Render_Before($Sender) {
-		if (!(C('Plugins.InfiniteScroll.Discussion', true)
-			&& $this->GetUserMeta($Session->UserID, 'Enable', true, true)))
+		if (!C('Plugins.InfiniteScroll.Discussion', true)
+			|| !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
 			return;
 		$this->Ressources($Sender);
 		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
@@ -55,14 +55,26 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Category->Url);
 		$this->Ressources($Sender);
 	}
-
+	
+	public function Base_Render_Before($Sender) {
+		//this adds the Ressources if only the sticky Panel is enabled
+		if (!C('Plugins.InfiniteScroll.FixedPanel', false)
+			|| !$this->GetUserMeta($Session->UserID, 'Enable', true, true)
+			|| inSection(array('Profile', 'Dashboard')))
+			return;
+		//!profile
+		$Sender->AddDefinition('InfiniteScroll_FixedPanel', true);
+		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
+		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));
+	}
+	
 	//check user preferences and include js
 	private function Ressources($Sender) {
 		$Session = Gdn::Session();
 		if ($Session->IsValid() && !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
 			return;
+		$Sender->AddDefinition('InfiniteScroll_Active', true);
 		$Sender->AddDefinition('InfiniteScroll_Treshold', intval(C('Plugins.InfiniteScroll.Treshold', 300)));
-		$Sender->AddDefinition('InfiniteScroll_FixedPanel', C('Plugins.InfiniteScroll.FixedPanel', false));
 		$Sender->AddJsFile($this->GetResource('js/nanobar.min.js', false, false));
 		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
 		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));

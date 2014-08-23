@@ -78,7 +78,6 @@ jQuery(function($) {
 		if (!isLastPage)
 			CommentForm.hide();
 	}
-	preparation(gdn.definition('InfiniteScroll_Page', false));
 
 	//create the progress bar
 	if (inDiscussion) {
@@ -172,7 +171,7 @@ jQuery(function($) {
 		var page = LastInview.data('page');
 		var newState = discussionUrl + '/p' + ((page !== null) ? page : 1);
 		if (newState != url)
-			{history.replaceState(null, null, newState);}
+			history.replaceState(null, null, newState);
 		url = newState;
 	}
 
@@ -189,16 +188,10 @@ jQuery(function($) {
 	function jumpToEnd(direction) {
 		//check if we can just scroll
 		var full = (pagesLoaded == totalPages);
-		if (!direction && (isFirstPage || full)) {
-			$('html, body').animate({scrollTop: 0},
-				400, 'swing', function() {
-					updateUrl();
-					updateIndex();
-				});
-			return;
-		} else if (direction && (isLastPage || full)) {
-			$('html, body').animate({scrollTop: $('#Form_Comment').offset().top},
-				400, 'swing', function() {
+		if (full || (!direction && isFirstPage) || (direction && isLastPage)) {
+			$('html, body').animate({
+				scrollTop: (direction) ? CommentForm.offset().top : 0
+				}, 400, 'swing', function() {
 					updateUrl();
 					updateIndex();
 				});
@@ -213,36 +206,36 @@ jQuery(function($) {
 		$('#PageProgress').show();
 		$.get(discussionUrl + '/p' + pageNo, function(data) {
 		//drop everything and just load the first/last set of posts
-				Content.replaceWith($(ContentSelector, data));
-				preparation((direction) ? totalPages : 1);
-				pagesLoaded = 1;
-				pagesBefore = pageNo - 1;
-				pageNext = pagesBefore + 2;
-				if (!direction)
-					$('html, body').animate({scrollTop: 0},
-						400, 'swing', function() {
-							updateUrl();
-							updateIndex();
-						});
-				else
-					$('html, body').animate(
-						{scrollTop: $('#Form_Comment').offset().top},
-						400, 'swing', function() {
-							updateUrl();
-							updateIndex();
-						});
+			Content.replaceWith($(ContentSelector, data));
+			preparation((direction) ? totalPages : 1);
+			pagesLoaded = 1;
+			pagesBefore = pageNo - 1;
+			pageNext = pagesBefore + 2;
+			$('html, body').animate({
+				scrollTop: (direction) ? CommentForm.offset().top : 0
+				}).promise()
+				.always(function() {
+					ajax = false;
+					infiniteScroll();
+				});
 		}).always(function() {
-			ajax = false;
 			Content.css('opacity', 1);
 			$('#PageProgress').hide();
-			infiniteScroll();
 		});
 	}
 
-	$(window).scroll(infiniteScroll);
-	//trigger for short content
-	infiniteScroll();
+	if (gdn.definition('InfiniteScroll_Active', false)) {
+		preparation(gdn.definition('InfiniteScroll_Page', false));
+		$(window).scroll(infiniteScroll);
+		//trigger for short content
+		infiniteScroll();
+		$('#InfScrollJTT').click(function(e) {e.preventDefault(); jumpToEnd(false);});
+		$('#InfScrollJTB').click(function(e) {e.preventDefault(); jumpToEnd(true);});
+	} else {
+		Content = $(ContentSelector);
+	}
 	
+	//Sticky Panel
 	var difference, track, panelScrollActive;
 	function panelScrollInit() {
 		difference = Panel.height() - $(window).height();
@@ -283,7 +276,4 @@ jQuery(function($) {
 			return false;
 		});
 	}
-
-	$('#InfScrollJTT').click(function(e) {e.preventDefault(); jumpToEnd(false);});
-	$('#InfScrollJTB').click(function(e) {e.preventDefault(); jumpToEnd(true);});
 });

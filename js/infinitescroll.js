@@ -280,9 +280,9 @@ jQuery(function($) {
 		$(document).on('CommentAdded', function() {
 			countComments++;
 			$('#InfScrollPageCount span.small').text('/' + countComments);
+			DataList.children().last().data('page', pageNext - 1);
 			updateUrl();
 			updateIndex();
-			DataList.children().last().data('page', pageNext - 1);
 		});
 	} else {
 		Content = $(ContentSelector);

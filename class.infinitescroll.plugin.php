@@ -137,7 +137,7 @@ class InfiniteScroll extends Gdn_Plugin {
 			'Plugins.InfiniteScroll.Nav' => array(
 				'Control' => 'CheckBox',
 				'LabelCode' => 'Show navigation',
-				'Description' => T('InfiniteScroll.NavDesc', 'This adds a box with 2 Buttons to jump to the top and bottom of the page, so users don\'t have to scroll through endless discussions.'),
+				'Description' => T('InfiniteScroll.NavDesc', 'This adds a box with navigation elements so users don\'t have to manually scroll through endless discussions.'),
 				'Default' => C('Plugins.InfiniteScroll.Nav', true)
 			),
 			'Plugins.InfiniteScroll.NavPosition' => array(
@@ -149,20 +149,21 @@ class InfiniteScroll extends Gdn_Plugin {
 			'Plugins.InfiniteScroll.TextColor' => array(
 				'Control' => 'textbox',
 				'LabelCode' => 'Navigation Text Color',
+				'Description' => T('InfiniteScroll.TextColorDesc','Can be any CSS color, e.g. red, #ff0000, rgba(255, 0, 0, 1).'),
 				'Default' => C('Plugins.InfiniteScroll.TextColor', 'rgba(0, 0, 0, 0.5)'),
 				'Options' => array('maxlength' => '35', 'style' => 'width:180px;')
 			),
 			'Plugins.InfiniteScroll.ProgressColor' => array(
 				'Control' => 'textbox',
 				'LabelCode' => 'Progress Bar Color',
-				'Description' => T('InfiniteScroll.ProgColorDesc', 'Define the color of the progressbar on the top to match your theme. Can be any CSS color, e.g. red, #ff0000, rgba(255, 0, 0, 1). If you don\'t want the bar to be visible, just type in "transparent".'),
+				'Description' => T('InfiniteScroll.ProgColorDesc', 'Define the color of the progressbar on the top to match your theme. If you don\'t want the bar to be visible, just type in "transparent".'),
 				'Default' => C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'),
 				'Options' => array('maxlength' => '35', 'style' => 'width:180px;')
 			),
 			'Plugins.InfiniteScroll.FixedPanel' => array(
 				'Control' => 'CheckBox',
 				'LabelCode' => 'Fixed Panel',
-				'Description' => T('InfiniteScroll.FixedPanelDesc', 'This simply applies a "position: fixed;" to the Panel and makes some adjustments. This should be tested first, as it may require changes to your theme to work.'),
+				'Description' => T('InfiniteScroll.FixedPanelDesc', 'This simply applies a "position: fixed;" to the Panel and makes some adjustments to work with the default theme. This should be tested first, as it may require changes to your theme to work.'),
 				'Default' => C('Plugins.InfiniteScroll.FixedPanel', false)
 			),
 		));

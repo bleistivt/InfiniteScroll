@@ -37,30 +37,35 @@ jQuery(function($) {
 		LoadingBar = $('<span class="Progress"/>'),
 		Dummy = $('<div/>'),
 		LastInview,
+		navOpen = !inDiscussion,
 		throttle = 0;
 	//selector for default theme and vanilla-bootstrap
 	var DataListSelector = '#Content ul.DataList, main.page-content ul.DataList',
 		ContentSelector = '#Content, main.page-content',
 		NavIndex = $('#NavIndex'),
 		Panel = $('#Panel, aside.page-sidebar'),
+		InfScrollJT = $('#InfScrollJT'),
 		panelTop = Panel.offset().top,
 		panelHeight = Panel.height(),
 		DataList, MessageList, Content, CommentForm;
 
 	function preparation(page) {
 		isLastPage = isFirstPage = false;
+		pagesBefore = page - 1;
+		pageNext = page + 1;
 		DataList = $(DataListSelector);
 		MessageList = $('div.MessageList.Discussion');
 		Content = $(ContentSelector);
 		CommentForm = Content.find('.CommentForm');
 		DataList.children().data('page', page);
+		DataList.children().first().prepend('<a id="Page_' + page + '"/>');
 		var checkDom = (page === false);
 		//hide the pagers on both ends
-		if (page == totalPages || (checkDom && $('#PagerAfter a.Next').length === 0)) {
+		if (page == totalPages || (checkDom && !$('#PagerAfter a.Next').length)) {
 			$('#PagerAfter').hide();
 			isLastPage = true;
 		}
-		if (page == 1 || (checkDom && $('#PagerBefore a.Previous').length === 0)) {
+		if (page == 1 || (checkDom && !$('#PagerBefore a.Previous').length)) {
 			$('#PagerBefore').hide();
 			isFirstPage = true;
 		}
@@ -173,10 +178,13 @@ jQuery(function($) {
 		LastInview = $('li.Item:infscrollinview', DataList).last();
 		//use the added data to update the url
 		var page = LastInview.data('page');
-		var newState = discussionUrl + '/p' + ((page !== null) ? page : 1);
+		page = (page !== null) ? page : 1;
+		var newState = discussionUrl + '/p' + page;
 		if (newState != url)
 			history.replaceState(null, null, newState);
 		url = newState;
+		if (!(navOpen && InfScrollJT.is(':focus')))
+			InfScrollJT.val(page);
 	}
 
 	function updateIndex() {
@@ -184,22 +192,29 @@ jQuery(function($) {
 			LastInview = $('li.Item:infscrollinview', DataList).last();
 		//calculate the actual index of last comment visible in viewport
 		var index = pagesBefore * perPage + LastInview.index() + 2;
-		if (LastInview.length === 0) {
+		if (!LastInview.length) {
 			var wt = window.pageYOffset || document.documentElement.scrollTop;
-			index = (wt > CommentForm.offset().top) ? countComments : 1;
+			index = (wt > CommentForm.offset().top + 100) ? countComments : 1;
 		}
 		NavIndex.text(index);
 		//prevent nanobar-bug (also prevent the bar from disappearing completely)
 		ProgressBar.go(index / countComments * 99.9);
 	}
 
-	function jumpToEnd(direction) {
+	function jumpTo(page) {
+		//0,1 = top; -1 = CommentForm; >1 = page
+		var jumpto = false,
+			bottom = (page == -1) ? true : false;
+		if (page < 2) {
+			jumpto = (page == -1) ? CommentForm.offset().top : 0;
+			page = (page == -1) ? totalPages : 1;
+		}
 		//check if we can just scroll
-		var full = (pagesLoaded == totalPages);
-		if (full || (!direction && isFirstPage) || (direction && isLastPage)) {
-			$('html, body').animate({
-				scrollTop: (direction) ? CommentForm.offset().top : 0
-				}, 400, 'swing', function() {
+		if ((pagesLoaded == totalPages) || (pagesBefore < page && page < pageNext)) {
+			if (jumpto === false)
+				jumpto = $('#Page_' + page).offset().top;
+			$('html, body').animate({scrollTop: jumpto}, 400, 'swing',
+				function() {
 					updateUrl();
 					updateIndex();
 				});
@@ -208,20 +223,21 @@ jQuery(function($) {
 		if (ajax)
 			return;
 		ajax = true;
-		//true = jump to bottom, false = jump to top
-		var pageNo = (direction) ? totalPages : 1;
 		Content.css('opacity', 0);
 		$('#PageProgress').show();
-		$.get(discussionUrl + '/p' + pageNo, function(data) {
+		$.get(discussionUrl + '/p' + page, function(data) {
 		//drop everything and just load the first/last set of posts
 			Content.replaceWith($(ContentSelector, data));
-			preparation((direction) ? totalPages : 1);
+			preparation(page);
 			pagesLoaded = 1;
-			pagesBefore = pageNo - 1;
+			pagesBefore = page - 1;
 			pageNext = pagesBefore + 2;
-			$('html, body').animate({
-				scrollTop: (direction) ? CommentForm.offset().top : 0
-				}).promise()
+			if (jumpto === false)
+				jumpto = $('#Page_' + page).offset().top;
+			else if (bottom)
+				jumpto = CommentForm.offset().top;
+			$('html, body').animate({scrollTop: jumpto})
+				.promise()
 				.always(function() {
 					ajax = false;
 					infiniteScroll();
@@ -237,8 +253,34 @@ jQuery(function($) {
 		$(window).scroll(infiniteScroll);
 		//trigger for short content
 		infiniteScroll();
-		$('#InfScrollJTT').click(function(e) {e.preventDefault(); jumpToEnd(false);});
-		$('#InfScrollJTB').click(function(e) {e.preventDefault(); jumpToEnd(true);});
+		$('#InfScrollJTT').click(function(e) {e.preventDefault(); jumpTo(0);});
+		$('#InfScrollJTB').click(function(e) {e.preventDefault(); jumpTo(-1);});
+		//jump to page navigation input box
+		$(document).click(function(e) {
+			var Nav = $('#InfScrollNav');
+			if (!$(e.target).closest(Nav).length) {
+				Nav.removeClass('active');
+				navOpen = false;
+			} else if ($(e.target).closest('#InfScrollPageCount').length) {
+				Nav.addClass('active');
+				navOpen = true;
+				InfScrollJT.focus().select();
+			}
+		});
+		$('#InfScrollJumpTo').submit(function() {
+			var page = parseInt(InfScrollJT.val(), 10);
+			if (0 < page && page <= totalPages)
+				jumpTo(page);
+			return false;
+		});
+		//increment comment count when a new comment was added
+		$(document).on('CommentAdded', function() {
+			countComments++;
+			$('#InfScrollPageCount span.small').text('/' + countComments);
+			updateUrl();
+			updateIndex();
+			DataList.children().last().data('page', pageNext - 1);
+		});
 	} else {
 		Content = $(ContentSelector);
 	}

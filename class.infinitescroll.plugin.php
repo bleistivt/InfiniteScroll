@@ -2,7 +2,7 @@
 $PluginInfo['InfiniteScroll'] = array(
 	'Name' => 'Infinite Scroll',
 	'Description' => 'Infinite scrolling for discussions and discussion lists',
-	'Version' => '0.6',
+	'Version' => '1.0',
 	'RequiredApplications' => array('Vanilla' => '2.1'),
 	'SettingsPermission' => 'Garden.Settings.Manage',
 	'SettingsUrl' => '/settings/infinitescroll',
@@ -21,18 +21,22 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
 		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Discussion->CountComments + 1);
 		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['Page']);
-		$Sender->AddDefinition('InfiniteScroll_Pages', CalculateNumberOfPages(
-			$Sender->Discussion->CountComments, C('Vanilla.Comments.PerPage', 30)));
+		$pageCount = CalculateNumberOfPages($Sender->Discussion->CountComments, C('Vanilla.Comments.PerPage', 30));
+		$Sender->AddDefinition('InfiniteScroll_Pages', $pageCount);
 		$Sender->AddDefinition('InfiniteScroll_PerPage', intval(C('Vanilla.Comments.PerPage', 30)));
 		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Data['Discussion']->Url);
 		$Sender->AddDefinition('InfiniteScroll_ProgressBg',
 			C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'));
-		//header
+		//navigation
 		if (C('Plugins.InfiniteScroll.Nav', true)) {
 			$Controls = Anchor('&#x25b2;', '#', array('id' => 'InfScrollJTT'))
 				.Wrap(Wrap(' ', 'span', array('id' => 'NavIndex'))
 					.Wrap('/'.($Sender->Discussion->CountComments + 1), 'span', array('class' => 'small')),
 					'span', array('id' => 'InfScrollPageCount'))
+				.Wrap(T('jump to page')
+					.'<br><input type="number" maxlength="4" id="InfScrollJT" class="InputBox"> '
+					.sprintf(T('of %s'), $pageCount),
+					'form', array('id' => 'InfScrollJumpTo', 'class' => 'small'))
 				.Anchor('&#x25bc;', '#', array('id' => 'InfScrollJTB'));
 			$Sender->AddAsset('Foot',Wrap($Controls, 'div', array('id' => 'InfScrollNav')));
 		}

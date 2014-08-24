@@ -203,11 +203,12 @@ jQuery(function($) {
 	function jumpTo(page) {
 		if (ajax)
 			return;
-		//0,1 = top; -1 = CommentForm; >1 = page
+		//0,1 = Item_0; -1 = CommentForm; >1 = page
 		var jumpto = false,
 			bottom = (page == -1) ? true : false;
 		if (page < 2) {
-			jumpto = (page == -1) ? CommentForm.offset().top : 0;
+			jumpto = (page == -1) ?
+				CommentForm.offset().top : $('#Item_0').offset().top;
 			page = (page == -1) ? totalPages : 1;
 		}
 		//check if we can just scroll
@@ -295,7 +296,7 @@ jQuery(function($) {
 		Panel.css('margin-top', 0);
 		panelScrollActive = false;
 		if (difference > 0) {
-			difference += 30;
+			difference += 40;
 			panelScrollActive = true;
 		}
 	}

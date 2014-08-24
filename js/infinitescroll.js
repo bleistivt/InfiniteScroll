@@ -76,7 +76,6 @@ jQuery(function($) {
 			if (dummyHeight > 0) {
 				Dummy.css('min-height', dummyHeight);
 				Content.prepend(Dummy);
-				
 			}
 		}
 		//don't show the comment form (yet)
@@ -202,6 +201,8 @@ jQuery(function($) {
 	}
 
 	function jumpTo(page) {
+		if (ajax)
+			return;
 		//0,1 = top; -1 = CommentForm; >1 = page
 		var jumpto = false,
 			bottom = (page == -1) ? true : false;
@@ -267,6 +268,7 @@ jQuery(function($) {
 				InfScrollJT.focus().select();
 			}
 		});
+		InfScrollJT.click(function() {InfScrollJT.select();});
 		$('#InfScrollJumpTo').submit(function() {
 			var page = parseInt(InfScrollJT.val(), 10);
 			if (0 < page && page <= totalPages)
@@ -284,7 +286,7 @@ jQuery(function($) {
 	} else {
 		Content = $(ContentSelector);
 	}
-	
+
 	//Sticky Panel
 	var difference, track, panelScrollActive;
 	function panelScrollInit() {

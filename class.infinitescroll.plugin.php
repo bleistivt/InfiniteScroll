@@ -2,7 +2,7 @@
 $PluginInfo['InfiniteScroll'] = array(
 	'Name' => 'Infinite Scroll',
 	'Description' => 'Infinite scrolling for discussions and discussion lists',
-	'Version' => '1.0.1',
+	'Version' => '1.1',
 	'RequiredApplications' => array('Vanilla' => '2.1.1'),
 	'SettingsPermission' => 'Garden.Settings.Manage',
 	'SettingsUrl' => '/settings/infinitescroll',
@@ -17,29 +17,43 @@ class InfiniteScroll extends Gdn_Plugin {
 		if (!C('Plugins.InfiniteScroll.Discussion', true)
 			|| !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
 			return;
-		$this->Ressources($Sender);
+		
+		$pageCount = CalculateNumberOfPages($Sender->Discussion->CountComments, C('Vanilla.Comments.PerPage', 30));
+		
 		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
 		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Discussion->CountComments + 1);
 		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['Page']);
-		$pageCount = CalculateNumberOfPages($Sender->Discussion->CountComments, C('Vanilla.Comments.PerPage', 30));
 		$Sender->AddDefinition('InfiniteScroll_Pages', $pageCount);
 		$Sender->AddDefinition('InfiniteScroll_PerPage', intval(C('Vanilla.Comments.PerPage', 30)));
 		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Data['Discussion']->Url);
 		$Sender->AddDefinition('InfiniteScroll_ProgressBg',
 			C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'));
+		
+		$this->Ressources($Sender);
+		
 		//navigation
 		if (C('Plugins.InfiniteScroll.Nav', true)) {
-			$Controls = Anchor('&#x25b2;', '#', array('id' => 'InfScrollJTT'))
-				.Wrap(Wrap(' ', 'span', array('id' => 'NavIndex'))
-					.Wrap('/'.($Sender->Discussion->CountComments + 1), 'span', array('class' => 'small')),
-					'span', array('id' => 'InfScrollPageCount'))
-				.Wrap(T('jump to page')
-					.'<br><input type="number" maxlength="4" id="InfScrollJT" class="InputBox"> '
-					.sprintf(T('of %s'), $pageCount),
-					'form', array('id' => 'InfScrollJumpTo', 'class' => 'small'))
+			$Index = Wrap(
+				Wrap(' ', 'span', array('id' => 'NavIndex'))
+				.Wrap(
+					'/'.($Sender->Discussion->CountComments + 1), 'span', array('class' => 'small')
+				),
+				'span', array('id' => 'InfScrollPageCount')
+			);
+			$JumpTo = Wrap(
+				T('jump to page')
+				.'<br><input type="number" maxlength="4" id="InfScrollJT" class="InputBox"> '
+				.sprintf(T('of %s'), $pageCount),
+				'form', array('id' => 'InfScrollJumpTo', 'class' => 'small')
+			);
+			$Controls =
+				Anchor('&#x25b2;', '#', array('id' => 'InfScrollJTT'))
+				.$Index.$JumpTo
 				.Anchor('&#x25bc;', '#', array('id' => 'InfScrollJTB'));
+			
 			$Sender->AddAsset('Foot',Wrap($Controls, 'div', array('id' => 'InfScrollNav')));
 		}
+		
 		//loading bar
 		$Sender->AddAsset('Foot', Wrap('', 'span',
 			array('id' => 'PageProgress', 'class' => 'Progress'))
@@ -47,27 +61,35 @@ class InfiniteScroll extends Gdn_Plugin {
 	}
 
 	public function DiscussionsController_Render_Before($Sender) {
-		if (C('Plugins.InfiniteScroll.DiscussionList', true) && C('Vanilla.Discussions.Layout') != 'table')
+		if (C('Plugins.InfiniteScroll.DiscussionList', true) &&
+			C('Vanilla.Discussions.Layout') != 'table')
 			$this->Ressources($Sender);
 	}
 
 	public function CategoriesController_Render_Before($Sender) {
-		if (!C('Plugins.InfiniteScroll.DiscussionList', true) || C('Vanilla.Discussions.Layout') == 'table')
+		if (!C('Plugins.InfiniteScroll.DiscussionList', true) ||
+			C('Vanilla.Discussions.Layout') == 'table')
 			return;
-		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['_Page']);
-		$Sender->AddDefinition('InfiniteScroll_Pages', CalculateNumberOfPages(
-			$Sender->Data['Category']->CountDiscussions, C('Vanilla.Discussions.PerPage', 30)));
+		
+		$pageCount = $Sender->Data['_Page'];
+		$pageCount = ($pageCount) ? intval(filter_var($Sender->Data['_Page'], FILTER_SANITIZE_NUMBER_INT)) : 1;
+		$discussionsCount = CalculateNumberOfPages($Sender->Data['Category']->CountDiscussions,
+			C('Vanilla.Discussions.PerPage', 30));
+		
+		$Sender->AddDefinition('InfiniteScroll_Page', $pageCount);
+		$Sender->AddDefinition('InfiniteScroll_Pages', $discussionsCount);
 		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Category->Url);
+		
 		$this->Ressources($Sender);
 	}
 	
 	public function Base_Render_Before($Sender) {
 		//this adds the Ressources if only the sticky Panel is enabled
-		if (!C('Plugins.InfiniteScroll.FixedPanel', false)
-			|| !$this->GetUserMeta($Session->UserID, 'Enable', true, true)
-			|| inSection(array('Profile', 'Dashboard')))
+		if (!C('Plugins.InfiniteScroll.FixedPanel', false) ||
+			!$this->GetUserMeta($Session->UserID, 'Enable', true, true) ||
+			inSection(array('Profile', 'Dashboard')))
 			return;
-		//!profile
+		
 		$Sender->AddDefinition('InfiniteScroll_FixedPanel', true);
 		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
 		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));
@@ -78,15 +100,20 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Session = Gdn::Session();
 		if ($Session->IsValid() && !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
 			return;
+		
 		$Sender->AddDefinition('InfiniteScroll_Active', true);
+		$Sender->AddDefinition('InfiniteScroll_HideHead', C('Plugins.InfiniteScroll.HideHead', true));
 		$Sender->AddDefinition('InfiniteScroll_Treshold', intval(C('Plugins.InfiniteScroll.Treshold', 300)));
+		
 		$Sender->AddJsFile($this->GetResource('js/nanobar.min.js', false, false));
 		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
 		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));
-		$pos = array ('top:0;right:0;', 'bottom:0;right:0;', 'top:0;left:0;', 'bottom:0;left:0;');
+		
+		$pos = array('top:0;right:0;', 'bottom:0;right:0;', 'top:0;left:0;', 'bottom:0;left:0;');
 		$Position = '#InfScrollNav{'.$pos[C('Plugins.InfiniteScroll.NavPosition', '0')].'}';
 		$Color = '#InfScrollNav,#InfScrollNav a,#InfScrollNav a:hover{color:'
 			.htmlspecialchars(C('Plugins.InfiniteScroll.TextColor', 'rgba(0, 0, 0, 0.5)')).';}';
+		
 		$Sender->Head->AddString('<style type="text/css">'.$Position.$Color.'</style>');
 	}
 
@@ -106,6 +133,7 @@ class InfiniteScroll extends Gdn_Plugin {
 		$UserID = val('UserID', $FormValues, 0);
 		if (!is_int($UserID) || $UserID <= 0)
 			return;
+		
 		$InfiniteScroll = val('InfiniteScroll', $FormValues, false);
 		$this->SetUserMeta($UserID, 'Enable', $InfiniteScroll);
 	}
@@ -115,6 +143,7 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Sender->Permission('Garden.Settings.Manage');
 		$Sender->SetData('Title', T('InfiniteScroll').' '.T('Settings'));
 		$Sender->AddSideMenu('dashboard/settings/plugins');
+		
 		$Conf = new ConfigurationModule($Sender);
 		$Conf->Initialize(array(
 			'Plugins.InfiniteScroll.Discussion' => array(
@@ -159,6 +188,12 @@ class InfiniteScroll extends Gdn_Plugin {
 				'Description' => T('InfiniteScroll.ProgColorDesc', 'Define the color of the progressbar on the top to match your theme. If you don\'t want the bar to be visible, just type in "transparent".'),
 				'Default' => C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'),
 				'Options' => array('maxlength' => '35', 'style' => 'width:180px;')
+			),
+			'Plugins.InfiniteScroll.HideHead' => array(
+				'Control' => 'CheckBox',
+				'LabelCode' => 'Hide Head Elements',
+				'Description' => T('InfiniteScroll.HideHeadDesc', 'Hide the header and breadcrumbs when until Page 1 is reached. This simulates an "infinite" page better, but should be turned off, if you have changed you theme to have a fixed header, for example.'),
+				'Default' => C('Plugins.InfiniteScroll.HideHead', true)
 			),
 			'Plugins.InfiniteScroll.FixedPanel' => array(
 				'Control' => 'CheckBox',

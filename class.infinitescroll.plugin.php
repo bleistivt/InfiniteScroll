@@ -2,7 +2,7 @@
 $PluginInfo['InfiniteScroll'] = array(
 	'Name' => 'Infinite Scroll',
 	'Description' => 'Infinite scrolling for discussions and discussion lists',
-	'Version' => '1.1',
+	'Version' => '1.1.1',
 	'RequiredApplications' => array('Vanilla' => '2.1.1'),
 	'SettingsPermission' => 'Garden.Settings.Manage',
 	'SettingsUrl' => '/settings/infinitescroll',
@@ -14,6 +14,7 @@ $PluginInfo['InfiniteScroll'] = array(
 class InfiniteScroll extends Gdn_Plugin {
 
 	public function Discussioncontroller_Render_Before($Sender) {
+		$Session = Gdn::Session();
 		if (!C('Plugins.InfiniteScroll.Discussion', true)
 			|| !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
 			return;
@@ -84,6 +85,7 @@ class InfiniteScroll extends Gdn_Plugin {
 	}
 	
 	public function Base_Render_Before($Sender) {
+		$Session = Gdn::Session();
 		//this adds the Ressources if only the sticky Panel is enabled
 		if (!C('Plugins.InfiniteScroll.FixedPanel', false) ||
 			!$this->GetUserMeta($Session->UserID, 'Enable', true, true) ||
@@ -131,7 +133,7 @@ class InfiniteScroll extends Gdn_Plugin {
 	public function UserModel_AfterSave_Handler($Sender) {
 		$FormValues = $Sender->EventArguments['FormPostValues'];
 		$UserID = val('UserID', $FormValues, 0);
-		if (!is_int($UserID) || $UserID <= 0)
+		if (!is_numeric($UserID) || $UserID <= 0)
 			return;
 		
 		$InfiniteScroll = val('InfiniteScroll', $FormValues, false);
@@ -192,7 +194,7 @@ class InfiniteScroll extends Gdn_Plugin {
 			'Plugins.InfiniteScroll.HideHead' => array(
 				'Control' => 'CheckBox',
 				'LabelCode' => 'Hide Head Elements',
-				'Description' => T('InfiniteScroll.HideHeadDesc', 'Hide the header and breadcrumbs when until Page 1 is reached. This simulates an "infinite" page better, but should be turned off, if you have changed you theme to have a fixed header, for example.'),
+				'Description' => T('InfiniteScroll.HideHeadDesc', 'Hide the header and breadcrumbs when until Page 1 is reached. This simulates an "infinite" page better, but should be turned off, if you have changed your theme to have a fixed header, for example.'),
 				'Default' => C('Plugins.InfiniteScroll.HideHead', true)
 			),
 			'Plugins.InfiniteScroll.FixedPanel' => array(

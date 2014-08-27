@@ -51,8 +51,12 @@ class InfiniteScroll extends Gdn_Plugin {
 				Anchor('&#x25b2;', '#', array('id' => 'InfScrollJTT'))
 				.$Index.$JumpTo
 				.Anchor('&#x25bc;', '#', array('id' => 'InfScrollJTB'));
+			$Position = array('TopRight', 'BottomRight', 'TopLeft', 'BottomLeft');
 			
-			$Sender->AddAsset('Foot',Wrap($Controls, 'div', array('id' => 'InfScrollNav')));
+			$Sender->AddAsset('Foot',Wrap($Controls, 'div',
+				array('id' => 'InfScrollNav',
+					'class' => $Position[C('Plugins.InfiniteScroll.NavPosition', '0')])
+			));
 		}
 		
 		//loading bar
@@ -112,12 +116,10 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
 		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));
 		
-		$pos = array('top:0;right:0;', 'bottom:0;right:0;', 'top:0;left:0;', 'bottom:0;left:0;');
-		$Position = '#InfScrollNav{'.$pos[C('Plugins.InfiniteScroll.NavPosition', '0')].'}';
 		$Color = '#InfScrollNav,#InfScrollNav a,#InfScrollNav a:hover{color:'
 			.htmlspecialchars(C('Plugins.InfiniteScroll.TextColor', 'rgba(0, 0, 0, 0.5)')).';}';
 		
-		$Sender->Head->AddString('<style type="text/css">'.$Position.$Color.'</style>');
+		$Sender->Head->AddString('<style type="text/css">'.$Color.'</style>');
 	}
 
 	//user preference checkbox

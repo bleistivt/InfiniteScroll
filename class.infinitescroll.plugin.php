@@ -69,7 +69,8 @@ class InfiniteScroll extends Gdn_Plugin {
 
 	public function CategoriesController_Render_Before($Sender) {
 		if (!C('Plugins.InfiniteScroll.DiscussionList', true) ||
-			C('Vanilla.Discussions.Layout') == 'table')
+			C('Vanilla.Discussions.Layout') == 'table' ||
+			!$Sender->Category)
 			return;
 		
 		$pageCount = $Sender->Data['_Page'];

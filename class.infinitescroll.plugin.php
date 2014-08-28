@@ -197,7 +197,7 @@ class InfiniteScroll extends Gdn_Plugin {
 			'Plugins.InfiniteScroll.HideHead' => array(
 				'Control' => 'CheckBox',
 				'LabelCode' => 'Hide Head Elements',
-				'Description' => T('InfiniteScroll.HideHeadDesc', 'Hide the header and breadcrumbs when until Page 1 is reached. This simulates an "infinite" page better, but should be turned off, if you have changed your theme to have a fixed header, for example.'),
+				'Description' => T('InfiniteScroll.HideHeadDesc', 'Hide the header and breadcrumbs until Page 1 is reached. This simulates an "infinite" page better, but should be turned off, if there are incompatibilities with your theme (e.g. if it has a fixed header).'),
 				'Default' => C('Plugins.InfiniteScroll.HideHead', true)
 			),
 			'Plugins.InfiniteScroll.FixedPanel' => array(

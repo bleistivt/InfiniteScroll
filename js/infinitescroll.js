@@ -8,7 +8,8 @@ function infScrollInview(el, offset) {
 		wb = wt + window.innerHeight;
 	else if (document.documentElement && document.documentElement.clientHeight)
 		wb = wt + document.documentElement.clientHeight;
-	var et = 0, ell = el;
+	var et = 0,
+		ell = el;
 	while (ell && !isNaN(ell.offsetTop)) {
 		et += ell.offsetTop;
 		ell = ell.offsetParent;
@@ -18,7 +19,9 @@ function infScrollInview(el, offset) {
 }
 //extend jQuery with :infscrollinview selector
 jQuery.extend(jQuery.expr[':'], {
-	infscrollinview: function(el) {return infScrollInview(el, 0);}
+	infscrollinview: function(el) {
+		return infScrollInview(el, 0);
+	}
 });
 
 jQuery(function($) {
@@ -49,7 +52,7 @@ jQuery(function($) {
 		ContentSelector = '#Content, main.page-content',
 		NavIndex = $('#NavIndex'),
 		HeadElemsSelector = '#Head, .BreadcrumbsWrapper, #Item_0, h2.CommentHeading, ' +
-			'div.PageDescription, h1.HomepageTitle',
+		'div.PageDescription, h1.HomepageTitle',
 		HeadElems = $(HeadElemsSelector),
 		Panel = $('#Panel, aside.page-sidebar'),
 		InfScrollJT = $('#InfScrollJT'),
@@ -68,7 +71,7 @@ jQuery(function($) {
 		Content = $(ContentSelector);
 		CommentForm = Content.find('.CommentForm');
 		if (!CommentForm.length)
-			//dummy CommentForm, in case the discussion is closed
+		//dummy CommentForm, in case the discussion is closed
 			CommentForm = $('<div class="CommentForm"/>').insertAfter(DataList);
 		DataList.children().data('page', page);
 		DataList.children().first().prepend('<a id="Page_' + page + '"/>');
@@ -160,7 +163,7 @@ jQuery(function($) {
 				}
 				pagesLoaded++;
 				pageNext++;
-			}) .fail(function() {
+			}).fail(function() {
 				//bring back the pager if something went wrong
 				PagerAfter.replaceWith(PagerBackup);
 			}).always(function() {
@@ -169,7 +172,7 @@ jQuery(function($) {
 			});
 			//show a loading indicator
 			PagerAfter.html(LoadingBar);
-		//scrolling up
+			//scrolling up
 		} else if (PagerBeforeInView && PagerBeforeA.length > 0) {
 			ajax = true;
 			PagerBefore = $(PagerBefore);
@@ -202,7 +205,7 @@ jQuery(function($) {
 				$document.scrollTop(OldScroll + $document.height() - OldHeight);
 				pagesLoaded++;
 				pagesBefore--;
-			}) .fail(function() {
+			}).fail(function() {
 				PagerBefore.replaceWith(PagerBackup);
 			}).always(function() {
 				ajax = false;
@@ -259,7 +262,9 @@ jQuery(function($) {
 		if ((pagesLoaded == totalPages) || (pagesBefore < page && page < pageNext)) {
 			if (jumpto === false)
 				jumpto = $('#Page_' + page).offset().top;
-			$('html, body').animate({scrollTop: jumpto}, 400, 'swing',
+			$('html, body').animate({
+					scrollTop: jumpto
+				}, 400, 'swing',
 				function() {
 					updateUrl();
 					updateIndex();
@@ -274,7 +279,7 @@ jQuery(function($) {
 		Content.css('opacity', 0);
 		$('#PageProgress').show();
 		$.get(baseUrl + '/p' + page, function(data) {
-		//drop everything and just load the first/last set of posts
+			//drop everything and just load the first/last set of posts
 			Content.replaceWith($(ContentSelector, data));
 			HeadElems = $(HeadElemsSelector);
 			preparation(page);
@@ -282,7 +287,9 @@ jQuery(function($) {
 				jumpto = $('#Page_' + page).offset().top;
 			else if (bottom)
 				jumpto = CommentForm.offset().top;
-			$('html, body').animate({scrollTop: jumpto})
+			$('html, body').animate({
+					scrollTop: jumpto
+				})
 				.promise()
 				.always(function() {
 					ajax = false;
@@ -299,8 +306,14 @@ jQuery(function($) {
 		$window.scroll(infiniteScroll);
 		//trigger for short content
 		infiniteScroll();
-		$('#InfScrollJTT').click(function(e) { e.preventDefault(); jumpTo(0); });
-		$('#InfScrollJTB').click(function(e) { e.preventDefault(); jumpTo(-1); });
+		$('#InfScrollJTT').click(function(e) {
+			e.preventDefault();
+			jumpTo(0);
+		});
+		$('#InfScrollJTB').click(function(e) {
+			e.preventDefault();
+			jumpTo(-1);
+		});
 		//jump to page navigation input box
 		$document.click(function(e) {
 			var Nav = $('#InfScrollNav');
@@ -315,7 +328,7 @@ jQuery(function($) {
 		});
 		//j as shortkey to jump between pages
 		$document.keypress('j', function(e) {
-			if($(e.target).is('input, textarea'))
+			if ($(e.target).is('input, textarea'))
 				return;
 			var charCode = (typeof e.which == 'undefined') ? e.keyCode : e.which;
 			if (String.fromCharCode(charCode) == 'j')
@@ -355,6 +368,7 @@ jQuery(function($) {
 
 	//Sticky Panel
 	var difference, track, panelScrollActive;
+
 	function panelScrollInit() {
 		difference = Panel.height() - $window.height();
 		track = 0;
@@ -386,10 +400,14 @@ jQuery(function($) {
 			if ((e.originalEvent.detail > 0 || e.originalEvent.wheelDelta < 0) &&
 				track > -difference) {
 				track -= (track < 50 - difference) ? 0 : 50;
-				Panel.stop().animate({marginTop: track + 'px'}, 'fast', 'easeOutCirc');
+				Panel.stop().animate({
+					marginTop: track + 'px'
+				}, 'fast', 'easeOutCirc');
 			} else if (track < 0) {
 				track += (track > -50) ? 0 : 50;
-				Panel.stop().animate({marginTop: track + 'px'}, 'fast', 'easeOutCirc');
+				Panel.stop().animate({
+					marginTop: track + 'px'
+				}, 'fast', 'easeOutCirc');
 			}
 			return false;
 		});

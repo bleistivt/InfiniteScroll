@@ -15,7 +15,7 @@ function infScrollInview(el, offset) {
 		ell = ell.offsetParent;
 	}
 	var eb = et + el.clientHeight;
-	return eb >= wt - offset && et <= wb + offset;
+	return eb > wt - offset && et <= wb + offset;
 }
 //extend jQuery with :infscrollinview selector
 jQuery.extend(jQuery.expr[':'], {
@@ -43,6 +43,7 @@ jQuery(function($) {
 		isLastPage, isFirstPage,
 		LoadingBar = $('<span class="Progress"/>'),
 		Dummy = $('<div/>'),
+		FirstInview,
 		LastInview,
 		navOpen = !inDiscussion,
 		throttle = 0,
@@ -169,6 +170,8 @@ jQuery(function($) {
 			}).always(function() {
 				//allow new requests, even if this request failed somehow
 				ajax = false;
+				updateUrl();
+				updateIndex();
 			});
 			//show a loading indicator
 			PagerAfter.html(LoadingBar);
@@ -209,6 +212,8 @@ jQuery(function($) {
 				PagerBefore.replaceWith(PagerBackup);
 			}).always(function() {
 				ajax = false;
+				updateUrl();
+				updateIndex();
 			});
 			PagerBefore.html(LoadingBar);
 		}
@@ -217,15 +222,20 @@ jQuery(function($) {
 	function updateUrl() {
 		if (unload)
 			return;
-		//last comment that is visible in the viewport
-		LastInview = $('li.Item:infscrollinview', DataList).last();
+		//get first and last comment visible in the viewport
+		LastInview = $('li.Item:infscrollinview', DataList);
+		FirstInview = LastInview.first();
+		LastInview = LastInview.last();
 		//use the added data to update the url
-		var page = LastInview.data('page');
+		var page = FirstInview.data('page');
+		//don't add the hash on the first discussion post
+		var item0Inview = (pagesBefore === 0) ? infScrollInview(MessageList[0], 0) : false;
+		var hash = (inDiscussion && FirstInview[0] && !item0Inview) ? '#' + FirstInview[0].id : '';
 		if (!page) {
 			var wt = window.pageYOffset || document.documentElement.scrollTop;
 			page = (wt > dataListTop) ? totalPages : 1;
 		}
-		var newState = baseUrl + '/p' + page;
+		var newState = baseUrl + '/p' + page + hash;
 		if (newState != url)
 			history.replaceState(null, null, newState);
 		url = newState;
@@ -302,10 +312,22 @@ jQuery(function($) {
 	}
 
 	if (gdn.definition('InfiniteScroll_Active', false)) {
+		//prevent the browser from jumping between hashes on first load
+		unload = true;
+		setTimeout(function() {
+			unload = false;
+		}, 500);
 		preparation(gdn.definition('InfiniteScroll_Page', false));
 		$window.scroll(infiniteScroll);
 		//trigger for short content
 		infiniteScroll();
+		//update the url when scrolling abruptly stops
+		var scrollstop = null;
+		$window.scroll(function() {
+			if (scrollstop !== null)
+				clearTimeout(scrollstop);		 
+			scrollstop = setTimeout(infiniteScroll, 250);
+		});
 		$('#InfScrollJTT').click(function(e) {
 			e.preventDefault();
 			jumpTo(0);

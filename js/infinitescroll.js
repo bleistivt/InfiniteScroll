@@ -313,6 +313,14 @@ jQuery(function($) {
 				InfScrollJT.focus();
 			}
 		});
+		//j as shortkey to jump between pages
+		$document.keypress('j', function(e) {
+			if($(e.target).is('input, textarea'))
+				return;
+			var charCode = (typeof e.which == 'undefined') ? e.keyCode : e.which;
+			if (String.fromCharCode(charCode) == 'j')
+				$('#InfScrollPageCount').click();
+		});
 		InfScrollJT.focus(function() {
 			InfScrollJT.one('mouseup', function() {
 				InfScrollJT.select();

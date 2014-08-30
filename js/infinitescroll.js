@@ -1,6 +1,6 @@
 //check if an element is inside the viewport
 function infScrollInview(el, offset) {
-	if (el === null)
+	if (el == null)
 		return false;
 	var wt = window.pageYOffset || document.documentElement.scrollTop,
 		wb = wt;
@@ -220,7 +220,7 @@ jQuery(function($) {
 	}
 
 	function updateUrl() {
-		if (unload)
+		if (unload || !baseUrl)
 			return;
 		//get first and last comment visible in the viewport
 		LastInview = $('li.Item:infscrollinview', DataList);
@@ -253,8 +253,9 @@ jQuery(function($) {
 			index = (wt > dataListTop) ? countComments : 1;
 		}
 		NavIndex.text(index);
-		//prevent nanobar-bug (also prevent the bar from disappearing completely)
-		ProgressBar.go(index / countComments * 99.9);
+		if (inDiscussion)
+			//prevent nanobar-bug (also prevent the bar from disappearing completely)
+			ProgressBar.go(index / countComments * 99.9);
 	}
 
 	function jumpTo(page) {
@@ -326,7 +327,7 @@ jQuery(function($) {
 		$window.scroll(function() {
 			if (scrollstop !== null)
 				clearTimeout(scrollstop);		 
-			scrollstop = setTimeout(infiniteScroll, 250);
+			scrollstop = setTimeout(infiniteScroll, 150);
 		});
 		$('#InfScrollJTT').click(function(e) {
 			e.preventDefault();

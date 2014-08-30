@@ -1,6 +1,6 @@
 //check if an element is inside the viewport
 function infScrollInview(el, offset) {
-	if (el == null)
+	if (el === null || el === undefined)
 		return false;
 	var wt = window.pageYOffset || document.documentElement.scrollTop,
 		wb = wt;

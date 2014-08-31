@@ -53,7 +53,7 @@ jQuery(function($) {
 		ContentSelector = '#Content, main.page-content',
 		NavIndex = $('#NavIndex'),
 		HeadElemsSelector = '#Head, .BreadcrumbsWrapper, #Item_0, h2.CommentHeading, ' +
-		'div.PageDescription, h1.HomepageTitle',
+		'div.PageDescription, h1.HomepageTitle, nav.navbar-static-top, span.Breadcrumbs',
 		HeadElems = $(HeadElemsSelector),
 		Panel = $('#Panel, aside.page-sidebar'),
 		InfScrollJT = $('#InfScrollJT'),

@@ -16,13 +16,14 @@ class InfiniteScroll extends Gdn_Plugin {
 	public function Discussioncontroller_Render_Before($Sender) {
 		$Session = Gdn::Session();
 		if (!C('Plugins.InfiniteScroll.Discussion', true)
-			|| !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
+			|| !$this->GetUserMeta($Session->UserID, 'Enable', true, true)
+			|| !isset($Sender->Data['Page']))
 			return;
 		
-		$pageCount = CalculateNumberOfPages($Sender->Discussion->CountComments, C('Vanilla.Comments.PerPage', 30));
+		$pageCount = CalculateNumberOfPages($Sender->Data['Discussion']->CountComments, C('Vanilla.Comments.PerPage', 30));
 		
 		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
-		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Discussion->CountComments + 1);
+		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Data['Discussion']->CountComments + 1);
 		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['Page']);
 		$Sender->AddDefinition('InfiniteScroll_Pages', $pageCount);
 		$Sender->AddDefinition('InfiniteScroll_PerPage', intval(C('Vanilla.Comments.PerPage', 30)));
@@ -37,7 +38,7 @@ class InfiniteScroll extends Gdn_Plugin {
 			$Index = Wrap(
 				Wrap(' ', 'span', array('id' => 'NavIndex'))
 				.Wrap(
-					'/'.($Sender->Discussion->CountComments + 1), 'span', array('class' => 'small')
+					'/'.($Sender->Data['Discussion']->CountComments + 1), 'span', array('class' => 'small')
 				),
 				'span', array('id' => 'InfScrollPageCount')
 			);
@@ -139,7 +140,7 @@ class InfiniteScroll extends Gdn_Plugin {
 		if (!is_numeric($UserID) || $UserID <= 0)
 			return;
 		
-		$InfiniteScroll = val('InfiniteScroll', $FormValues, false);
+		$InfiniteScroll = GetValue('InfiniteScroll', $FormValues, false);
 		$this->SetUserMeta($UserID, 'Enable', $InfiniteScroll);
 	}
 

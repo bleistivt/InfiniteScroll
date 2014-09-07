@@ -140,7 +140,7 @@ class InfiniteScroll extends Gdn_Plugin {
 		if (!is_numeric($UserID) || $UserID <= 0)
 			return;
 		
-		$InfiniteScroll = GetValue('InfiniteScroll', $FormValues, false);
+		$InfiniteScroll = val('InfiniteScroll', $FormValues, false);
 		$this->SetUserMeta($UserID, 'Enable', $InfiniteScroll);
 	}
 

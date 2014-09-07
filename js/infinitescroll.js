@@ -164,6 +164,7 @@ jQuery(function($) {
 				}
 				pagesLoaded++;
 				pageNext++;
+				$document.trigger('CommentAdded');
 			}).fail(function() {
 				//bring back the pager if something went wrong
 				PagerAfter.replaceWith(PagerBackup);
@@ -208,6 +209,7 @@ jQuery(function($) {
 				$document.scrollTop(OldScroll + $document.height() - OldHeight);
 				pagesLoaded++;
 				pagesBefore--;
+				$document.trigger('CommentAdded');
 			}).fail(function() {
 				PagerBefore.replaceWith(PagerBackup);
 			}).always(function() {

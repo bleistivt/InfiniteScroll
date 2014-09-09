@@ -2,7 +2,7 @@
 $PluginInfo['InfiniteScroll'] = array(
 	'Name' => 'Infinite Scroll',
 	'Description' => 'Infinite scrolling for discussions and discussion lists',
-	'Version' => '1.2.1',
+	'Version' => '1.3',
 	'RequiredApplications' => array('Vanilla' => '2.1.1'),
 	'SettingsPermission' => 'Garden.Settings.Manage',
 	'SettingsUrl' => '/settings/infinitescroll',
@@ -28,6 +28,7 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Sender->AddDefinition('InfiniteScroll_Pages', $pageCount);
 		$Sender->AddDefinition('InfiniteScroll_PerPage', intval(C('Vanilla.Comments.PerPage', 30)));
 		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Data['Discussion']->Url);
+		$Sender->AddDefinition('InfiniteScroll_Shortkey', C('Plugins.InfiniteScroll.Shortkey', 'j'));
 		$Sender->AddDefinition('InfiniteScroll_ProgressBg',
 			C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'));
 		
@@ -174,6 +175,13 @@ class InfiniteScroll extends Gdn_Plugin {
 				'LabelCode' => 'Show navigation',
 				'Description' => T('InfiniteScroll.NavDesc', 'This adds a box with navigation elements so users don\'t have to manually scroll through endless discussions.'),
 				'Default' => C('Plugins.InfiniteScroll.Nav', true)
+			),
+			'Plugins.InfiniteScroll.Shortkey' => array(
+				'Control' => 'textbox',
+				'LabelCode' => 'Navigation Shortkey',
+				'Description' => T('InfiniteScroll.ShortkeyDesc', 'Shortkey to open the page jump navigation. Should be writeable with a single click on the keyboard.'),
+				'Default' => C('Plugins.InfiniteScroll.Shortkey', 'j'),
+				'Options' => array('maxlength' => '8', 'style' => 'width:15px;')
 			),
 			'Plugins.InfiniteScroll.NavPosition' => array(
 				'Control' => 'dropdown',

@@ -35,6 +35,7 @@ jQuery(function($) {
 		countComments = gdn.definition('InfiniteScroll_CountComments'),
 		perPage = gdn.definition('InfiniteScroll_PerPage'),
 		inDiscussion = gdn.definition('InfiniteScroll_InDiscussion', false),
+		shortkey = gdn.definition('InfiniteScroll_Shortkey', 'j'),
 		hideHead = gdn.definition('InfiniteScroll_HideHead', true),
 		fixedPanel = gdn.definition('InfiniteScroll_FixedPanel', false),
 		treshold = gdn.definition('InfiniteScroll_Treshold', 300),
@@ -351,12 +352,12 @@ jQuery(function($) {
 				InfScrollJT.focus();
 			}
 		});
-		//j as shortkey to jump between pages
-		$document.keypress('j', function(e) {
+		//shortkey to jump between pages
+		$document.keypress(shortkey, function(e) {
 			if ($(e.target).is('input, textarea'))
 				return;
 			var charCode = (typeof e.which == 'undefined') ? e.keyCode : e.which;
-			if (String.fromCharCode(charCode) == 'j')
+			if (String.fromCharCode(charCode) == shortkey)
 				$('#InfScrollPageCount').click();
 		});
 		InfScrollJT.focus(function() {

@@ -35,7 +35,7 @@ jQuery(function($) {
 		countComments = gdn.definition('InfiniteScroll_CountComments'),
 		perPage = gdn.definition('InfiniteScroll_PerPage'),
 		inDiscussion = gdn.definition('InfiniteScroll_InDiscussion', false),
-		shortkey = gdn.definition('InfiniteScroll_Shortkey', 'j'),
+		shortkey = gdn.definition('InfiniteScroll_Shortkey', 'j').charAt(0),
 		hideHead = gdn.definition('InfiniteScroll_HideHead', true),
 		fixedPanel = gdn.definition('InfiniteScroll_FixedPanel', false),
 		treshold = gdn.definition('InfiniteScroll_Treshold', 300),
@@ -44,8 +44,7 @@ jQuery(function($) {
 		isLastPage, isFirstPage,
 		LoadingBar = $('<span class="Progress"/>'),
 		Dummy = $('<div/>'),
-		FirstInview,
-		LastInview,
+		FirstInview, LastInview,
 		navOpen = !inDiscussion,
 		throttle = 0,
 		unload = false;
@@ -165,7 +164,6 @@ jQuery(function($) {
 				}
 				pagesLoaded++;
 				pageNext++;
-				$document.trigger('CommentAdded');
 			}).fail(function() {
 				//bring back the pager if something went wrong
 				PagerAfter.replaceWith(PagerBackup);
@@ -210,7 +208,6 @@ jQuery(function($) {
 				$document.scrollTop(OldScroll + $document.height() - OldHeight);
 				pagesLoaded++;
 				pagesBefore--;
-				$document.trigger('CommentAdded');
 			}).fail(function() {
 				PagerBefore.replaceWith(PagerBackup);
 			}).always(function() {

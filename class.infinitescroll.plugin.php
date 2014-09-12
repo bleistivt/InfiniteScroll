@@ -2,7 +2,7 @@
 $PluginInfo['InfiniteScroll'] = array(
 	'Name' => 'Infinite Scroll',
 	'Description' => 'Infinite scrolling for discussions and discussion lists',
-	'Version' => '1.3',
+	'Version' => '1.3.1',
 	'RequiredApplications' => array('Vanilla' => '2.1.1'),
 	'SettingsPermission' => 'Garden.Settings.Manage',
 	'SettingsUrl' => '/settings/infinitescroll',
@@ -17,17 +17,17 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Session = Gdn::Session();
 		if (!C('Plugins.InfiniteScroll.Discussion', true)
 			|| !$this->GetUserMeta($Session->UserID, 'Enable', true, true)
-			|| !isset($Sender->Data['Page']))
+			|| !$Sender->Data('Page'))
 			return;
 		
-		$pageCount = CalculateNumberOfPages($Sender->Data['Discussion']->CountComments, C('Vanilla.Comments.PerPage', 30));
+		$pageCount = CalculateNumberOfPages($Sender->Data('Discussion')->CountComments, C('Vanilla.Comments.PerPage', 30));
 		
 		$Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
-		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Data['Discussion']->CountComments + 1);
-		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data['Page']);
+		$Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Data('Discussion')->CountComments + 1);
+		$Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data('Page'));
 		$Sender->AddDefinition('InfiniteScroll_Pages', $pageCount);
 		$Sender->AddDefinition('InfiniteScroll_PerPage', intval(C('Vanilla.Comments.PerPage', 30)));
-		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Data['Discussion']->Url);
+		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Data('Discussion')->Url);
 		$Sender->AddDefinition('InfiniteScroll_Shortkey', C('Plugins.InfiniteScroll.Shortkey', 'j'));
 		$Sender->AddDefinition('InfiniteScroll_ProgressBg',
 			C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'));
@@ -39,7 +39,7 @@ class InfiniteScroll extends Gdn_Plugin {
 			$Index = Wrap(
 				Wrap(' ', 'span', array('id' => 'NavIndex'))
 				.Wrap(
-					'/'.($Sender->Data['Discussion']->CountComments + 1), 'span', array('class' => 'small')
+					'/'.($Sender->Data('Discussion')->CountComments + 1), 'span', array('class' => 'small')
 				),
 				'span', array('id' => 'InfScrollPageCount')
 			);
@@ -79,9 +79,9 @@ class InfiniteScroll extends Gdn_Plugin {
 			!$Sender->Category)
 			return;
 		
-		$pageCount = $Sender->Data['_Page'];
-		$pageCount = ($pageCount) ? intval(filter_var($Sender->Data['_Page'], FILTER_SANITIZE_NUMBER_INT)) : 1;
-		$discussionsCount = CalculateNumberOfPages($Sender->Data['Category']->CountDiscussions,
+		$pageCount = $Sender->Data('_Page');
+		$pageCount = ($pageCount) ? intval(filter_var($Sender->Data('_Page'), FILTER_SANITIZE_NUMBER_INT)) : 1;
+		$discussionsCount = CalculateNumberOfPages($Sender->Data('Category')->CountDiscussions,
 			C('Vanilla.Discussions.PerPage', 30));
 		
 		$Sender->AddDefinition('InfiniteScroll_Page', $pageCount);
@@ -181,7 +181,7 @@ class InfiniteScroll extends Gdn_Plugin {
 				'LabelCode' => 'Navigation Shortkey',
 				'Description' => T('InfiniteScroll.ShortkeyDesc', 'Shortkey to open the page jump navigation. Should be writeable with a single click on the keyboard.'),
 				'Default' => C('Plugins.InfiniteScroll.Shortkey', 'j'),
-				'Options' => array('maxlength' => '8', 'style' => 'width:15px;')
+				'Options' => array('maxlength' => '1', 'style' => 'width:15px;')
 			),
 			'Plugins.InfiniteScroll.NavPosition' => array(
 				'Control' => 'dropdown',

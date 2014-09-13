@@ -100,8 +100,8 @@ class InfiniteScroll extends Gdn_Plugin {
 			return;
 		
 		$Sender->AddDefinition('InfiniteScroll_FixedPanel', true);
-		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
-		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));
+		$Sender->AddJsFile('infinitescroll.js', 'plugins/InfiniteScroll');
+		$Sender->AddCssFile('infinitescroll.css', 'plugins/InfiniteScroll');
 	}
 	
 	//check user preferences and include js
@@ -114,9 +114,9 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Sender->AddDefinition('InfiniteScroll_HideHead', C('Plugins.InfiniteScroll.HideHead', true));
 		$Sender->AddDefinition('InfiniteScroll_Treshold', intval(C('Plugins.InfiniteScroll.Treshold', 300)));
 		
-		$Sender->AddJsFile($this->GetResource('js/nanobar.min.js', false, false));
-		$Sender->AddJsFile($this->GetResource('js/infinitescroll.js', false, false));
-		$Sender->AddCssFile($this->GetResource('design/infinitescroll.css', false, false));
+		$Sender->AddJsFile('nanobar.min.js', 'plugins/InfiniteScroll');
+		$Sender->AddJsFile('infinitescroll.js', 'plugins/InfiniteScroll');
+		$Sender->AddCssFile('infinitescroll.css', 'plugins/InfiniteScroll');
 		
 		$Color = '#InfScrollNav,#InfScrollNav a,#InfScrollNav a:hover{color:'
 			.htmlspecialchars(C('Plugins.InfiniteScroll.TextColor', 'rgba(0, 0, 0, 0.5)')).';}';

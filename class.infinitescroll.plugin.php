@@ -2,7 +2,7 @@
 $PluginInfo['InfiniteScroll'] = array(
 	'Name' => 'Infinite Scroll',
 	'Description' => 'Infinite scrolling for discussions and discussion lists',
-	'Version' => '1.3.1',
+	'Version' => '1.3.2',
 	'RequiredApplications' => array('Vanilla' => '2.1.1'),
 	'SettingsPermission' => 'Garden.Settings.Manage',
 	'SettingsUrl' => '/settings/infinitescroll',
@@ -11,7 +11,7 @@ $PluginInfo['InfiniteScroll'] = array(
 	'AuthorUrl' => 'http://bleistivt.net'
 );
 
-class InfiniteScroll extends Gdn_Plugin {
+class InfiniteScrollPlugin extends Gdn_Plugin {
 
 	public function Discussioncontroller_Render_Before($Sender) {
 		$Session = Gdn::Session();
@@ -32,16 +32,16 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Sender->AddDefinition('InfiniteScroll_ProgressBg',
 			C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'));
 		
-		$this->Ressources($Sender);
+		$this->Resources($Sender);
 		
 		//navigation
 		if (C('Plugins.InfiniteScroll.Nav', true)) {
-			$Index = Wrap(
+			$Index =
+			Wrap(
 				Wrap(' ', 'span', array('id' => 'NavIndex'))
-				.Wrap(
-					'/'.($Sender->Data('Discussion')->CountComments + 1), 'span', array('class' => 'small')
-				),
-				'span', array('id' => 'InfScrollPageCount')
+				.Wrap('/'.($Sender->Data('Discussion')->CountComments + 1), 'span', array('class' => 'small')),
+				'span',
+				array('id' => 'InfScrollPageCount')
 			);
 			$JumpTo = Wrap(
 				T('jump to page')
@@ -70,7 +70,7 @@ class InfiniteScroll extends Gdn_Plugin {
 	public function DiscussionsController_Render_Before($Sender) {
 		if (C('Plugins.InfiniteScroll.DiscussionList', true) &&
 			C('Vanilla.Discussions.Layout') != 'table')
-			$this->Ressources($Sender);
+			$this->Resources($Sender);
 	}
 
 	public function CategoriesController_Render_Before($Sender) {
@@ -88,12 +88,12 @@ class InfiniteScroll extends Gdn_Plugin {
 		$Sender->AddDefinition('InfiniteScroll_Pages', $discussionsCount);
 		$Sender->AddDefinition('InfiniteScroll_Url', $Sender->Category->Url);
 		
-		$this->Ressources($Sender);
+		$this->Resources($Sender);
 	}
 	
 	public function Base_Render_Before($Sender) {
 		$Session = Gdn::Session();
-		//this adds the Ressources if only the sticky Panel is enabled
+		//this adds the resources if only the sticky Panel is enabled
 		if (!C('Plugins.InfiniteScroll.FixedPanel', false) ||
 			!$this->GetUserMeta($Session->UserID, 'Enable', true, true) ||
 			inSection(array('Profile', 'Dashboard')))
@@ -105,7 +105,7 @@ class InfiniteScroll extends Gdn_Plugin {
 	}
 	
 	//check user preferences and include js
-	private function Ressources($Sender) {
+	private function Resources($Sender) {
 		$Session = Gdn::Session();
 		if ($Session->IsValid() && !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
 			return;

@@ -206,6 +206,8 @@ jQuery(function($) {
 				Dummy.remove();
 				//the scroll position needs to be adjusted when prepending content
 				$document.scrollTop(OldScroll + $document.height() - OldHeight);
+				//recalculate the DataLists offset
+				dataListTop = DataList.offset().top;
 				pagesLoaded++;
 				pagesBefore--;
 			}).fail(function() {

@@ -164,6 +164,7 @@ jQuery(function($) {
                 }
                 pagesLoaded++;
                 pageNext++;
+                $document.trigger('CommentPagingComplete');
             }).fail(function() {
                 //bring back the pager if something went wrong
                 PagerAfter.replaceWith(PagerBackup);
@@ -210,6 +211,7 @@ jQuery(function($) {
                 dataListTop = DataList.offset().top;
                 pagesLoaded++;
                 pagesBefore--;
+                $document.trigger('CommentPagingComplete');
             }).fail(function() {
                 PagerBefore.replaceWith(PagerBackup);
             }).always(function() {

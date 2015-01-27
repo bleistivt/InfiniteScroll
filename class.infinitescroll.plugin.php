@@ -8,7 +8,8 @@ $PluginInfo['InfiniteScroll'] = array(
     'SettingsUrl' => '/settings/infinitescroll',
     'MobileFriendly' => false,
     'Author' => 'Bleisitvt',
-    'AuthorUrl' => 'http://bleistivt.net'
+    'AuthorUrl' => 'http://bleistivt.net',
+    'License' => 'GNU GPL2'
 );
 
 class InfiniteScrollPlugin extends Gdn_Plugin {

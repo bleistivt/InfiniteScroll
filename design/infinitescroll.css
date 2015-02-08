@@ -83,9 +83,9 @@
 @-moz-keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
 @keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
 .InfScrollHighlight {
-	-webkit-animation: InfScrollHighlight .8s;
-	-moz-animation: InfScrollHighlight .8s;
-	animation: InfScrollHighlight .8s;
+	-webkit-animation: InfScrollHighlight 2s;
+	-moz-animation: InfScrollHighlight 2s;
+	animation: InfScrollHighlight 2s;
 }
 @media only screen
 and (max-device-width : 480px) {

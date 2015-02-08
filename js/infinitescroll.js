@@ -383,7 +383,7 @@ jQuery(function($) {
         });
         //prevent the browser trying to "restore" the scroll position
         $window.on('beforeunload', function() {
-            if (pagesBefore === 0 || !inDiscussion)
+            if (pagesBefore === 0)
                 return;
             $('#Frame').css('opacity', 0);
             unload = true;

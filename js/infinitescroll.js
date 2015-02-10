@@ -52,6 +52,7 @@ jQuery(function($) {
         baseUrl = url,
         isLastPage, isFirstPage,
         LoadingBar = $('<span class="Progress"/>'),
+        PageProgress = $('#PageProgress'),
         Dummy = $('<div/>'),
         FirstInview, LastInview,
         navOpen = !inDiscussion,
@@ -67,7 +68,13 @@ jQuery(function($) {
         HeadElems = $(HeadElemsSelector),
         Panel = $('#Panel, aside.page-sidebar'),
         InfScrollJT = $('#InfScrollJT'),
+        Frame = $('#Frame'),
         DataList, dataListTop, MessageList, Content, CommentForm;
+
+    if (!Frame.length && jQuery.fn.spin) {
+        Frame = $('body > *');
+        PageProgress.spin({lines : 11, radius : 10, length : 10, width : 4});
+    }
 
     try {
         var panelTop = Panel.offset().top,
@@ -91,15 +98,6 @@ jQuery(function($) {
         DataList.children().data('page', page);
         DataList.children().first().prepend('<a id="Page_' + page + '"/>');
 
-        CommentForm = Content.find('.CommentForm');
-        if (!CommentForm.length) {
-            // Dummy CommentForm as an anchor.
-            CommentForm = $('<div class="CommentForm"/>').insertAfter(DataList);
-        }
-        if (!isLastPage) {
-            CommentForm.hide();
-        }
-
         var checkDom = (page === false);
         // Remove the pagers on both ends.
         if (page == totalPages || (checkDom && !$('#PagerAfter a.Next').length)) {
@@ -109,6 +107,15 @@ jQuery(function($) {
         if (page == 1 || (checkDom && !$('#PagerBefore a.Previous').length)) {
             $('#PagerBefore').remove();
             isFirstPage = true;
+        }
+
+        CommentForm = Content.find('.CommentForm');
+        if (!CommentForm.length) {
+            // Dummy CommentForm as an anchor.
+            CommentForm = $('<div class="CommentForm"/>').insertAfter(DataList);
+        }
+        if (!isLastPage) {
+            CommentForm.hide();
         }
 
         // Hide the Head elements and the Panel.
@@ -173,7 +180,8 @@ jQuery(function($) {
 
         // Yes? Grab the links.
         var PagerAfterA = $('a.Next', PagerAfter),
-            PagerBeforeA = $('a.Previous', PagerBefore);
+            PagerBeforeA = $('a.Previous', PagerBefore),
+            PagerBackup;
 
         // Scrolling down
         if (PagerAfterInView && PagerAfterA.length > 0) {
@@ -216,7 +224,14 @@ jQuery(function($) {
             });
 
             // Show a loading indicator.
-            PagerAfter.html(LoadingBar);
+            if (jQuery.fn.spin) {
+                PagerAfter
+                    .empty()
+                    .css({position : 'relative', padding : '0 50%'})
+                    .spin({lines : 9, radius : 6, length : 6, width : 3});
+            } else {
+                PagerAfter.html(LoadingBar);
+            }
 
         // Scrolling up
         } else if (PagerBeforeInView && PagerBeforeA.length > 0) {
@@ -241,7 +256,9 @@ jQuery(function($) {
                 HeadElems = $(HeadElemsSelector);
                 if ($('#PagerBefore a.Previous', data).length > 0) {
                     PagerBefore.replaceWith($('#PagerBefore', data));
-                    HeadElems.css('visibility', 'hidden');
+                    if (hideHead) {
+                        HeadElems.css('visibility', 'hidden');
+                    }
                 } else {
                     PagerBefore.remove();
                     if (hideHead) {
@@ -268,7 +285,14 @@ jQuery(function($) {
                 updateIndex();
             });
 
-            PagerBefore.html(LoadingBar);
+            if (jQuery.fn.spin) {
+                PagerBefore
+                    .empty()
+                    .css({position : 'relative', padding : '0 50%'})
+                    .spin({lines : 9, radius : 6, length : 6, width : 3});
+            } else {
+                PagerBefore.html(LoadingBar);
+            }
         }
     }
 
@@ -360,7 +384,7 @@ jQuery(function($) {
         // We can't scroll. Drop all content and load the requested page.
         ajax = true;
         Content.css('opacity', 0);
-        $('#PageProgress').show();
+        PageProgress.show();
 
         $.get(baseUrl + '/p' + page, function(data) {
             Content.replaceWith($(ContentSelector, data));
@@ -381,7 +405,7 @@ jQuery(function($) {
                 });
         }).always(function() {
             Content.css('opacity', 1);
-            $('#PageProgress').hide();
+            PageProgress.hide();
         });
     }
 
@@ -468,10 +492,10 @@ jQuery(function($) {
 
         // Prevent the browser trying to "restore" the scroll position.
         $window.on('beforeunload', function() {
-            $('#Frame').css('opacity', 0);
             unload = true;
+            Frame.css('opacity', 0);
             $window.scrollTop(0);
-            $('#PageProgress').show().detach().appendTo('body');
+            PageProgress.show().detach().appendTo('body');
         });
 
     } else {
@@ -500,7 +524,7 @@ jQuery(function($) {
             var st = $window.scrollTop();
             if (st >= panelTop && Content.height() > panelHeight) {
                 Panel.addClass('InfScrollFixed');
-            } else if ((pagesBefore === 0 && hideHead) || !hideHead) {
+            } else if (!ajax) {
                 Panel.removeClass('InfScrollFixed').css('margin-top', 0);
             }
         });

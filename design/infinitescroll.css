@@ -93,3 +93,7 @@ and (max-device-width : 480px) {
 		display: none;
 	}
 }
+.NumberedPager > div.spinner {
+	background: none;
+	border: none;
+}

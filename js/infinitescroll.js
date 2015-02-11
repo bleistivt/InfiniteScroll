@@ -1,13 +1,13 @@
 var InfiniteScroll = {};
 
 // This is the core logic to check if an element is (nearly) visible in the viewport.
-InfiniteScroll.inview = function(el, offset) {
+InfiniteScroll.inview = function (el, offset) {
     if (el === null || el === undefined) {
         return false;
     }
     var wt = window.pageYOffset || document.documentElement.scrollTop,
         wb = wt;
-    if (typeof(window.innerHeight) == 'number') {
+    if (typeof window.innerHeight === 'number') {
         wb = wt + window.innerHeight;
     } else if (document.documentElement && document.documentElement.clientHeight) {
         wb = wt + document.documentElement.clientHeight;
@@ -25,12 +25,12 @@ InfiniteScroll.inview = function(el, offset) {
 
 // Extend jQuery with :isinview selector.
 jQuery.extend(jQuery.expr[':'], {
-    isinview: function(el) {
+    isinview: function (el) {
         return InfiniteScroll.inview(el, 0);
     }
 });
 
-jQuery(function($) {
+jQuery(function ($) {
 
     // Initialize variables and get the plugins configuration from the definitions.
     var $window = $(window),
@@ -158,10 +158,12 @@ jQuery(function($) {
         var now = Date.now();
         if (now > throttle + 100) {
             throttle = now;
-            if (baseUrl)
+            if (baseUrl) {
                 updateUrl();
-            if (inDiscussion)
+            }
+            if (inDiscussion) {
                 updateIndex();
+            }
         }
         // Is a new request being made right now?
         if (ajax) {
@@ -191,7 +193,7 @@ jQuery(function($) {
             PagerBackup = PagerAfter.clone();
 
             //DeliveryType=Asset can not be used as it doesn't include the pager
-            $.get(PagerAfterA.attr('href'), function(data) {
+            $.get(PagerAfterA.attr('href'), function (data) {
                 // Extract and append the content.
                 $(DataListSelector, data)
                     .children()
@@ -213,10 +215,10 @@ jQuery(function($) {
                 pageNext++;
 
                 $document.trigger('CommentPagingComplete');
-            }).fail(function() {
+            }).fail(function () {
                 // Bring back the pager if something went wrong.
                 PagerAfter.replaceWith(PagerBackup);
-            }).always(function() {
+            }).always(function () {
                 // Allow new requests, even if this request failed somehow.
                 ajax = false;
                 updateUrl();
@@ -239,7 +241,7 @@ jQuery(function($) {
             PagerBefore = $(PagerBefore);
             PagerBackup = PagerBefore.clone();
 
-            $.get(PagerBeforeA.attr('href'), function(data) {
+            $.get(PagerBeforeA.attr('href'), function (data) {
                 var OldHeight = $document.height();
                 var OldScroll = $window.scrollTop();
                 $(DataListSelector, data)
@@ -277,9 +279,9 @@ jQuery(function($) {
                 pagesBefore--;
 
                 $document.trigger('CommentPagingComplete');
-            }).fail(function() {
+            }).fail(function () {
                 PagerBefore.replaceWith(PagerBackup);
-            }).always(function() {
+            }).always(function () {
                 ajax = false;
                 updateUrl();
                 updateIndex();
@@ -309,10 +311,8 @@ jQuery(function($) {
         // Use the added data to update the url.
         var page = FirstInview.data('page');
         // Don't add the hash on the first discussion post.
-        var item0Inview = (pagesBefore === 0) ?
-            InfiniteScroll.inview(MessageList[0], 0) : false;
-        var hash = (inDiscussion && FirstInview[0] && !item0Inview) ?
-            '#' + FirstInview[0].id : '';
+        var item0Inview = (pagesBefore === 0) ? InfiniteScroll.inview(MessageList[0], 0) : false;
+        var hash = (inDiscussion && FirstInview[0] && !item0Inview) ? '#' + FirstInview[0].id : '';
 
         if (!page) {
             var wt = window.pageYOffset || document.documentElement.scrollTop;
@@ -367,13 +367,15 @@ jQuery(function($) {
             if (jumpto === false) {
                 jumpto = $('#Page_' + page).offset().top;
             }
-            $('html, body').animate({
-                    scrollTop: jumpto
-                }, 400, 'swing',
-                function() {
+            $('html, body').animate(
+                { scrollTop: jumpto },
+                400,
+                'swing',
+                function () {
                     updateUrl();
                     updateIndex();
-                });
+                }
+            );
             if (page == 1 && hideHead) {
                 HeadElems.css('visibility', 'visible');
                 Panel.show();
@@ -386,7 +388,7 @@ jQuery(function($) {
         Content.css('opacity', 0);
         PageProgress.show();
 
-        $.get(baseUrl + '/p' + page, function(data) {
+        $.get(baseUrl + '/p' + page, function (data) {
             Content.replaceWith($(ContentSelector, data));
             HeadElems = $(HeadElemsSelector);
             preparation(page);
@@ -395,15 +397,14 @@ jQuery(function($) {
             } else if (bottom) {
                 jumpto = CommentForm.offset().top;
             }
-            $('html, body').animate({
-                    scrollTop: jumpto
-                })
+            $('html, body')
+                .animate({ scrollTop: jumpto })
                 .promise()
-                .always(function() {
+                .always(function () {
                     ajax = false;
                     infiniteScroll();
                 });
-        }).always(function() {
+        }).always(function () {
             Content.css('opacity', 1);
             PageProgress.hide();
         });
@@ -414,7 +415,7 @@ jQuery(function($) {
 
         // Prevent the browser from jumping between hashes on first the load.
         unload = true;
-        setTimeout(function() { unload = false; }, 1000);
+        setTimeout(function () { unload = false; }, 1000);
 
         // Prepare the page and attach the scroll handler-
         preparation(gdn.definition('InfiniteScroll_Page', false));
@@ -424,26 +425,27 @@ jQuery(function($) {
 
         // Update the url when scrolling abruptly stops.
         var scrollstop = null;
-        $window.scroll(function() {
-            if (scrollstop !== null)
+        $window.scroll(function () {
+            if (scrollstop !== null) {
                 clearTimeout(scrollstop);
+            }
             scrollstop = setTimeout(infiniteScroll, 150);
         });
 
 
         // Navigation box
 
-        $('#InfScrollJTT').click(function(e) {
+        $('#InfScrollJTT').click(function (e) {
             e.preventDefault();
             jumpTo(0);
         });
-        $('#InfScrollJTB').click(function(e) {
+        $('#InfScrollJTB').click(function (e) {
             e.preventDefault();
             jumpTo(-1);
         });
 
         // Jump box
-        $document.click(function(e) {
+        $document.click(function (e) {
             var Nav = $('#InfScrollNav');
             if (!$(e.target).closest(Nav).length) {
                 Nav.removeClass('active');
@@ -456,24 +458,24 @@ jQuery(function($) {
         });
 
         // Shortkey to jump between pages.
-        $document.keypress(shortkey, function(e) {
+        $document.keypress(shortkey, function (e) {
             if ($(e.target).is('input, textarea')) {
                 return;
             }
-            var charCode = (typeof e.which == 'undefined') ? e.keyCode : e.which;
+            var charCode = (e.which === 'undefined') ? e.keyCode : e.which;
             if (String.fromCharCode(charCode) == shortkey) {
                 $('#InfScrollPageCount').click();
             }
         });
 
-        InfScrollJT.focus(function() {
-            InfScrollJT.one('mouseup', function() {
+        InfScrollJT.focus(function () {
+            InfScrollJT.one('mouseup', function () {
                 InfScrollJT.select();
                 return false;
             }).select();
         });
 
-        $('#InfScrollJumpTo').submit(function() {
+        $('#InfScrollJumpTo').submit(function () {
             var page = parseInt(InfScrollJT.val(), 10);
             if (0 < page && page <= totalPages) {
                 jumpTo(page);
@@ -482,7 +484,7 @@ jQuery(function($) {
         });
 
         // Increment comment count when a new comment was added.
-        $document.on('CommentAdded', function() {
+        $document.on('CommentAdded', function () {
             countComments++;
             $('#InfScrollPageCount span.small').text('/' + countComments);
             DataList.children().last().data('page', pageNext - 1);
@@ -491,7 +493,7 @@ jQuery(function($) {
         });
 
         // Prevent the browser trying to "restore" the scroll position.
-        $window.on('beforeunload', function() {
+        $window.on('beforeunload', function () {
             unload = true;
             Frame.css('opacity', 0);
             $window.scrollTop(0);
@@ -520,7 +522,7 @@ jQuery(function($) {
     if (fixedPanel) {
 
         // Make the viewport "pick up" the Panel when scrolling down.
-        $window.scroll(function() {
+        $window.scroll(function () {
             var st = $window.scrollTop();
             if (st >= panelTop && Content.height() > panelHeight) {
                 Panel.addClass('InfScrollFixed');
@@ -534,17 +536,17 @@ jQuery(function($) {
         panelScrollInit();
 
         // overflow: auto; cannot be used as it cuts off the notifications popup.
-        Panel.on('DOMMouseScroll mousewheel', function(e) {
+        Panel.on('DOMMouseScroll mousewheel', function (e) {
             if (!panelScrollActive || !Panel.hasClass('InfScrollFixed')) {
                 return;
             }
-            if ((e.originalEvent.detail > 0 || e.originalEvent.wheelDelta < 0) &&
-                track > -difference) {
+            var event = e.originalEvent;
+            if ((event.detail > 0 || event.wheelDelta < 0) && track > -difference) {
                 track -= (track < 50 - difference) ? 0 : 50;
-                Panel.stop().animate({marginTop: track + 'px'}, 'fast', 'easeOutCirc');
+                Panel.stop().animate({ marginTop : track + 'px' }, 'fast', 'easeOutCirc');
             } else if (track < 0) {
                 track += (track > -50) ? 0 : 50;
-                Panel.stop().animate({marginTop: track + 'px'}, 'fast', 'easeOutCirc');
+                Panel.stop().animate({ marginTop : track + 'px' }, 'fast', 'easeOutCirc');
             }
             return false;
         });

@@ -336,7 +336,7 @@ jQuery(function ($) {
             LastInview = $('li.Item:isinview', DataList).last();
         }
         // Calculate the actual index of last comment visible in viewport.
-        var index = pagesBefore * perPage + LastInview.index() + 2;
+        var index = pagesBefore * perPage + LastInview.index('.Item') + 2;
         if (!LastInview.length) {
             var wt = window.pageYOffset || document.documentElement.scrollTop;
             index = (wt > dataListTop) ? countComments : 1;

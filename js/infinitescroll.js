@@ -417,7 +417,7 @@ jQuery(function ($) {
         unload = true;
         setTimeout(function () { unload = false; }, 1000);
 
-        // Prepare the page and attach the scroll handler-
+        // Prepare the page and attach the scroll handler.
         preparation(gdn.definition('InfiniteScroll_Page', false));
         $window.scroll(infiniteScroll);
         // Trigger for short content.

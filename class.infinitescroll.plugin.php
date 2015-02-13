@@ -2,7 +2,7 @@
 $PluginInfo['InfiniteScroll'] = array(
     'Name' => 'Infinite Scroll',
     'Description' => 'Infinite scrolling for discussions and discussion lists',
-    'Version' => '1.4.0',
+    'Version' => '1.4.1',
     'RequiredApplications' => array('Vanilla' => '2.1.1'),
     'SettingsPermission' => 'Garden.Settings.Manage',
     'SettingsUrl' => '/settings/infinitescroll',
@@ -23,14 +23,15 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
 
         $pageCount = CalculateNumberOfPages($Sender->Data('Discussion')->CountComments, C('Vanilla.Comments.PerPage', 30));
 
-        $Sender->AddDefinition('InfiniteScroll_InDiscussion', true);
-        $Sender->AddDefinition('InfiniteScroll_CountComments', $Sender->Data('Discussion')->CountComments + 1);
-        $Sender->AddDefinition('InfiniteScroll_Page', $Sender->Data('Page'));
-        $Sender->AddDefinition('InfiniteScroll_Pages', $pageCount);
-        $Sender->AddDefinition('InfiniteScroll_PerPage', intval(C('Vanilla.Comments.PerPage', 30)));
-        $Sender->AddDefinition('InfiniteScroll_Url', $Sender->Data('Discussion')->Url);
-        $Sender->AddDefinition('InfiniteScroll_Shortkey', C('Plugins.InfiniteScroll.Shortkey', 'j'));
-        $Sender->AddDefinition('InfiniteScroll_ProgressBg',
+        $Sender->AddDefinition('InfiniteScroll.InDiscussion', true);
+        $Sender->AddDefinition('InfiniteScroll.CountComments', $Sender->Data('Discussion')->CountComments + 1);
+        $Sender->AddDefinition('InfiniteScroll.Page', $Sender->Data('Page'));
+        $Sender->AddDefinition('InfiniteScroll.Pages', $pageCount);
+        $Sender->AddDefinition('InfiniteScroll.PerPage', intval(C('Vanilla.Comments.PerPage', 30)));
+        $Sender->AddDefinition('InfiniteScroll.Url', $Sender->Data('Discussion')->Url);
+        $Sender->AddDefinition('InfiniteScroll.Shortkey', C('Plugins.InfiniteScroll.Shortkey', 'j'));
+        $Sender->AddDefinition('InfiniteScroll.NavProgress', C('Plugins.InfiniteScroll.NavProgress', false));
+        $Sender->AddDefinition('InfiniteScroll.ProgressBg',
             C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'));
 
         $this->Resources($Sender);
@@ -39,21 +40,21 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
         if (C('Plugins.InfiniteScroll.Nav', true)) {
             $Index =
             Wrap(
-                Wrap(' ', 'span', array('id' => 'NavIndex'))
+                Wrap(' ', 'span', array('class' => 'NavIndex'))
                 .Wrap('/'.($Sender->Data('Discussion')->CountComments + 1), 'span', array('class' => 'small')),
                 'span',
-                array('id' => 'InfScrollPageCount')
+                array('class' => 'PageCount')
             );
             $JumpTo = Wrap(
                 T('jump to page')
                 .'<br><input type="number" maxlength="4" id="InfScrollJT" class="InputBox"> '
                 .sprintf(T('of %s'), $pageCount),
-                'form', array('id' => 'InfScrollJumpTo', 'class' => 'small')
+                'form', array('class' => 'JumpTo small')
             );
             $Controls =
-                Anchor('&#x25b2;', '#', array('id' => 'InfScrollJTT'))
+                Anchor('&#x25b2;', '#', array('class' => 'JTT'))
                 .$Index.$JumpTo
-                .Anchor('&#x25bc;', '#', array('id' => 'InfScrollJTB'));
+                .Anchor('&#x25bc;', '#', array('class' => 'JTB'));
             $Position = array('TopRight', 'BottomRight', 'TopLeft', 'BottomLeft');
 
             $Sender->AddAsset('Foot',Wrap($Controls, 'div',
@@ -85,9 +86,9 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
         $discussionsCount = CalculateNumberOfPages($Sender->Data('Category')->CountDiscussions,
             C('Vanilla.Discussions.PerPage', 30));
 
-        $Sender->AddDefinition('InfiniteScroll_Page', $pageCount);
-        $Sender->AddDefinition('InfiniteScroll_Pages', $discussionsCount);
-        $Sender->AddDefinition('InfiniteScroll_Url', $Sender->Category->Url);
+        $Sender->AddDefinition('InfiniteScroll.Page', $pageCount);
+        $Sender->AddDefinition('InfiniteScroll.Pages', $discussionsCount);
+        $Sender->AddDefinition('InfiniteScroll.Url', $Sender->Category->Url);
 
         $this->Resources($Sender);
     }
@@ -100,7 +101,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
             inSection(array('Profile', 'Dashboard')))
             return;
 
-        $Sender->AddDefinition('InfiniteScroll_FixedPanel', true);
+        $Sender->AddDefinition('InfiniteScroll.FixedPanel', true);
         $Sender->AddJsFile('infinitescroll.js', 'plugins/InfiniteScroll');
         $Sender->AddCssFile('infinitescroll.css', 'plugins/InfiniteScroll');
     }
@@ -111,9 +112,9 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
         if ($Session->IsValid() && !$this->GetUserMeta($Session->UserID, 'Enable', true, true))
             return;
 
-        $Sender->AddDefinition('InfiniteScroll_Active', true);
-        $Sender->AddDefinition('InfiniteScroll_HideHead', C('Plugins.InfiniteScroll.HideHead', true));
-        $Sender->AddDefinition('InfiniteScroll_Treshold', intval(C('Plugins.InfiniteScroll.Treshold', 300)));
+        $Sender->AddDefinition('InfiniteScroll.Active', true);
+        $Sender->AddDefinition('InfiniteScroll.HideHead', C('Plugins.InfiniteScroll.HideHead', true));
+        $Sender->AddDefinition('InfiniteScroll.Treshold', intval(C('Plugins.InfiniteScroll.Treshold', 300)));
 
         $Sender->AddJsFile('nanobar.min.js', 'plugins/InfiniteScroll');
         $Sender->AddJsFile('infinitescroll.js', 'plugins/InfiniteScroll');
@@ -200,9 +201,14 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
             'Plugins.InfiniteScroll.ProgressColor' => array(
                 'Control' => 'textbox',
                 'LabelCode' => 'Progress Bar Color',
-                'Description' => T('InfiniteScroll.ProgColorDesc', 'Define the color of the progressbar on the top to match your theme. If you don\'t want the bar to be visible, just type in "transparent".'),
+                'Description' => T('InfiniteScroll.ProgColorDesc', 'Define the color of the progress bar on the top to match your theme. If you don\'t want the bar to be visible, just type in "transparent".'),
                 'Default' => C('Plugins.InfiniteScroll.ProgressColor', '#38abe3'),
                 'Options' => array('maxlength' => '35', 'style' => 'width:180px;')
+            ),
+            'Plugins.InfiniteScroll.NavProgress' => array(
+                'Control' => 'CheckBox',
+                'LabelCode' => 'Attach the progress bar to the page navigation.',
+                'Default' => C('Plugins.InfiniteScroll.NavProgress', false)
             ),
             'Plugins.InfiniteScroll.HideHead' => array(
                 'Control' => 'CheckBox',

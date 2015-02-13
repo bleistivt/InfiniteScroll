@@ -124,7 +124,7 @@ and (max-device-width : 480px) {
 
 /*#ProgressBar {
 	height: 34px !important;
-	margin-bottom: -30px;
+	margin-bottom: -34px;
 }
 
 #ProgressBar>div {
@@ -144,7 +144,7 @@ and (max-device-width : 480px) {
 #InfScrollNav .PageCount {
 	font-weight: bold;
 	font-size: 18px;
-	line-height: 30px;
+	line-height: 34px;
 	font-family: Helvetica,Arial,sans-serif;
 	display: block;
 	position: absolute;

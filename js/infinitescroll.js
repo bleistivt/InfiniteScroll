@@ -32,23 +32,28 @@ jQuery.extend(jQuery.expr[':'], {
 
 jQuery(function ($) {
 
+    // Shorthand method for gdn.definition
+    function def(definition, defaultVal) {
+        return gdn.definition('InfiniteScroll.' + definition, defaultVal);
+    }
+
     // Initialize variables and get the plugins configuration from the definitions.
     var $window = $(window),
         $document = $(document),
         ajax,
         pagesLoaded = 1,
-        pagesBefore = gdn.definition('InfiniteScroll_Page', 1) - 1,
-        totalPages = gdn.definition('InfiniteScroll_Pages', 1),
+        pagesBefore = def('Page', 1) - 1,
+        totalPages = def('Pages', 1),
         pageNext = pagesBefore + 2,
-        countComments = gdn.definition('InfiniteScroll_CountComments'),
-        perPage = gdn.definition('InfiniteScroll_PerPage'),
-        active = gdn.definition('InfiniteScroll_Active', false),
-        inDiscussion = gdn.definition('InfiniteScroll_InDiscussion', false),
-        shortkey = gdn.definition('InfiniteScroll_Shortkey', 'j').charAt(0),
-        hideHead = gdn.definition('InfiniteScroll_HideHead', true),
-        fixedPanel = gdn.definition('InfiniteScroll_FixedPanel', false),
-        treshold = gdn.definition('InfiniteScroll_Treshold', 300),
-        url = gdn.definition('InfiniteScroll_Url', false),
+        countComments = def('CountComments'),
+        perPage = def('PerPage'),
+        active = def('Active', false),
+        inDiscussion = def('InDiscussion', false),
+        shortkey = def('Shortkey', 'j').charAt(0),
+        hideHead = def('HideHead', true),
+        fixedPanel = def('FixedPanel', false),
+        treshold = def('Treshold', 300),
+        url = def('Url', false),
         baseUrl = url,
         isLastPage, isFirstPage,
         LoadingBar = $('<span class="Progress"/>'),
@@ -62,7 +67,7 @@ jQuery(function ($) {
     // Selector for default theme and vanilla-bootstrap
     var DataListSelector = '#Content ul.DataList, main.page-content ul.DataList',
         ContentSelector = '#Content, main.page-content',
-        NavIndex = $('#NavIndex'),
+        NavIndex = $('#InfScrollNav .NavIndex'),
         HeadElemsSelector = '#Head, .BreadcrumbsWrapper, #Item_0, h2.CommentHeading, ' +
         'div.PageDescription, h1.HomepageTitle, nav.navbar-static-top, span.Breadcrumbs',
         HeadElems = $(HeadElemsSelector),
@@ -71,7 +76,7 @@ jQuery(function ($) {
         Frame = $('#Frame'),
         DataList, dataListTop, MessageList, Content, CommentForm;
 
-    if (!Frame.length && jQuery.fn.spin) {
+    if (!Frame.length && $.fn.spin) {
         Frame = $('body > *');
         PageProgress.spin({lines : 11, radius : 10, length : 10, width : 4});
     }
@@ -146,8 +151,9 @@ jQuery(function ($) {
     // Create the progress bar using the Nanobar plugin.
     if (inDiscussion) {
         var ProgressBar = new Nanobar({
-            bg: gdn.definition('InfiniteScroll_ProgressBg'),
-            id: 'ProgressBar'
+            bg: def('ProgressBg'),
+            id: 'ProgressBar',
+            target: def('NavProgress', false) ? null : $('#InfScrollNav .PageCount')[0]
         });
     }
 
@@ -226,7 +232,7 @@ jQuery(function ($) {
             });
 
             // Show a loading indicator.
-            if (jQuery.fn.spin) {
+            if ($.fn.spin) {
                 PagerAfter
                     .empty()
                     .css({position : 'relative', padding : '0 50%'})
@@ -287,7 +293,7 @@ jQuery(function ($) {
                 updateIndex();
             });
 
-            if (jQuery.fn.spin) {
+            if ($.fn.spin) {
                 PagerBefore
                     .empty()
                     .css({position : 'relative', padding : '0 50%'})
@@ -415,10 +421,10 @@ jQuery(function ($) {
 
         // Prevent the browser from jumping between hashes on first the load.
         unload = true;
-        setTimeout(function () { unload = false; }, 1000);
+        setTimeout(function () { unload = false; }, 850);
 
-        // Prepare the page and attach the scroll handler.
-        preparation(gdn.definition('InfiniteScroll_Page', false));
+        // Prepare the page and attach the scroll handler-
+        preparation(def('Page', false));
         $window.scroll(infiniteScroll);
         // Trigger for short content.
         infiniteScroll();
@@ -435,11 +441,11 @@ jQuery(function ($) {
 
         // Navigation box
 
-        $('#InfScrollJTT').click(function (e) {
+        $('#InfScrollNav .JTT').click(function (e) {
             e.preventDefault();
             jumpTo(0);
         });
-        $('#InfScrollJTB').click(function (e) {
+        $('#InfScrollNav .JTB').click(function (e) {
             e.preventDefault();
             jumpTo(-1);
         });
@@ -450,7 +456,7 @@ jQuery(function ($) {
             if (!$(e.target).closest(Nav).length) {
                 Nav.removeClass('active');
                 navOpen = false;
-            } else if ($(e.target).closest('#InfScrollPageCount').length) {
+            } else if ($(e.target).closest('#InfScrollNav .PageCount').length) {
                 Nav.addClass('active');
                 navOpen = true;
                 InfScrollJT.focus();
@@ -464,7 +470,7 @@ jQuery(function ($) {
             }
             var charCode = (e.which === 'undefined') ? e.keyCode : e.which;
             if (String.fromCharCode(charCode) == shortkey) {
-                $('#InfScrollPageCount').click();
+                $('#InfScrollNav .PageCount').click();
             }
         });
 
@@ -475,7 +481,7 @@ jQuery(function ($) {
             }).select();
         });
 
-        $('#InfScrollJumpTo').submit(function () {
+        $('#InfScrollNav form.JumpTo').submit(function () {
             var page = parseInt(InfScrollJT.val(), 10);
             if (0 < page && page <= totalPages) {
                 jumpTo(page);
@@ -486,7 +492,7 @@ jQuery(function ($) {
         // Increment comment count when a new comment was added.
         $document.on('CommentAdded', function () {
             countComments++;
-            $('#InfScrollPageCount span.small').text('/' + countComments);
+            $('#InfScrollNav .PageCount span.small').text('/' + countComments);
             DataList.children().last().data('page', pageNext - 1);
             updateUrl();
             updateIndex();

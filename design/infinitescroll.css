@@ -9,7 +9,7 @@
 	font-weight: normal;
 	font-style: normal;
 }
-#InfScrollJTT, #InfScrollJTB {
+#InfScrollNav .JTT, #InfScrollNav .JTB {
 	font-family: 'updown';
 }
 .InfScrollFixed {
@@ -55,19 +55,19 @@
 #InfScrollNav .small {
 	font-size: .5em;
 }
-#InfScrollPageCount {
+#InfScrollNav .PageCount {
 	cursor: pointer;
 }
-#InfScrollNav.active #InfScrollPageCount {
+#InfScrollNav.active .PageCount {
 	display:none;
 }
-#InfScrollJumpTo {
+#InfScrollNav .JumpTo {
 	display: none;
 }
-#InfScrollNav.active #InfScrollJumpTo {
+#InfScrollNav.active .JumpTo {
 	display: inline-block;
 }
-#InfScrollJumpTo .InputBox {
+#InfScrollNav .JumpTo .InputBox {
 	padding: 0;
 	width: 42px;
 	text-align: center;

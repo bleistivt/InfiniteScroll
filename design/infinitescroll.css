@@ -2,23 +2,28 @@
 	font-family: 'updown';
 	src: url('fonts/updown.eot');
 }
+
 @font-face {
 	font-family: 'updown';
 	src: url('data:application/x-font-ttf;charset=utf-8;base64,AAEAAAALAIAAAwAwT1MvMigiLHIAAAC8AAAAYGNtYXAl9yY0AAABHAAAAFRnYXNwAAAAEAAAAXAAAAAIZ2x5ZpIRlVUAAAF4AAAA8GhlYWQBOwTpAAACaAAAADZoaGVhA8gB5wAAAqAAAAAkaG10eAUAADQAAALEAAAAGGxvY2EAoABeAAAC3AAAAA5tYXhwAAgAHQAAAuwAAAAgbmFtZfz7j4QAAAMMAAABPHBvc3QAAwAAAAAESAAAACAAAwIAAZAABQAAAUwBZgAAAEcBTAFmAAAA9QAZAIQAAAAAAAAAAAAAAAAAAAABAAAgAAAAAAAAAAAAAAAAAABAAAAlvAHg/+D/4AHgACAAAAABAAAAAAAAAAAAAAAgAAAAAAACAAAAAwAAABQAAwABAAAAFAAEAEAAAAAMAAgAAgAEAAEAICWyJbz//f//AAAAAAAgJbIlvP/9//8AAf/j2lLaSQADAAEAAAAAAAAAAAAAAAAAAQAB//8ADwABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAQAAAAAAAAAAAAIAADc5AQAAAAABABoAKwHmAVIAGgAANzQ/ATYzMh8BFhUUDwEGIyIvAQcGIyIvASY1GgXUBgcHBtQFBTAFBwgFmJgFCAcFMAVsCAXUBQXUBQgHBi8FBZiYBQUvBgcAAAAAAQAaABsB5gFDABoAABM0PwE2NxYfATc2NxYfARYVFA8BBicGLwEmNRoFMAUHCAWYmAUIBwUwBQXUBgcHBtQFAQIIBTAEAQEEmZkEAQEEMAUIBwbTBwEBB9MGBwABAAAAAQAAbo0eP18PPPUACwIAAAAAANAbYk0AAAAA0BtiTQAAAAAB5gFSAAAACAACAAAAAAAAAAEAAAHg/+AAAAIAAAAAAAHmAAEAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAQAAAAIAABoCAAAaAAAAAAAKABQAHgBKAHgAAAABAAAABgAbAAEAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAADgCuAAEAAAAAAAEADAAAAAEAAAAAAAIADgBAAAEAAAAAAAMADAAiAAEAAAAAAAQADABOAAEAAAAAAAUAFgAMAAEAAAAAAAYABgAuAAEAAAAAAAoANABaAAMAAQQJAAEADAAAAAMAAQQJAAIADgBAAAMAAQQJAAMADAAiAAMAAQQJAAQADABOAAMAAQQJAAUAFgAMAAMAAQQJAAYADAA0AAMAAQQJAAoANABaAHUAcABkAG8AdwBuAFYAZQByAHMAaQBvAG4AIAAxAC4AMAB1AHAAZABvAHcAbnVwZG93bgB1AHAAZABvAHcAbgBSAGUAZwB1AGwAYQByAHUAcABkAG8AdwBuAEYAbwBuAHQAIABnAGUAbgBlAHIAYQB0AGUAZAAgAGIAeQAgAEkAYwBvAE0AbwBvAG4ALgADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') format('truetype'),
-		 url('data:application/font-woff;charset=utf-8;base64,d09GRk9UVE8AAAToAAoAAAAABKAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABDRkYgAAAA9AAAAV0AAAFdCqRELE9TLzIAAAJUAAAAYAAAAGAoIixyY21hcAAAArQAAABUAAAAVCX3JjRnYXNwAAADCAAAAAgAAAAIAAAAEGhlYWQAAAMQAAAANgAAADYBOwTpaGhlYQAAA0gAAAAkAAAAJAPIAedobXR4AAADbAAAABgAAAAYBQAANG1heHAAAAOEAAAABgAAAAYABlAAbmFtZQAAA4wAAAE8AAABPPz7j4Rwb3N0AAAEyAAAACAAAAAgAAMAAAEABAQAAQEBB3VwZG93bgABAgABADr4HAL4GwP4GAQeCgAZU/+Lix4KABlT/4uLDAeLa/iU+HQFHQAAAHkPHQAAAH4RHQAAAAkdAAABVBIABwEBBw0PERQZHnVwZG93bnVwZG93bnUwdTF1MjB1MjVCMnUyNUJDAAACAYkABAAGAQEEBwoNbc38lA78lA78lA77lA6l9wAVi5CNkI6OCPdo92gFj46PjZCLkIuPiY+ICPdo+2gFjoiNhouGi4aJh4iHCFtcBYiHh4qGi4aLhoyIjwj7LPcs+yz7LAWIh4aKhouGi4eMiI8IW7oFiI+Jj4uQCA6l95YVi5CNj46PCLu6BY6Oj42Qi5CLkImOiAj3LPss9yz3LAWOjpCNkIuQi4+JjogIu1wFjoeNh4uGi4aJhoiICPto+2gFh4eHiYaLhouHjYePCPto92gFiI6JkIuQCA74lBT4lBWLDAoAAAAAAwIAAZAABQAAAUwBZgAAAEcBTAFmAAAA9QAZAIQAAAAAAAAAAAAAAAAAAAABAAAgAAAAAAAAAAAAAAAAAABAAAAlvAHg/+D/4AHgACAAAAABAAAAAAAAAAAAAAAgAAAAAAACAAAAAwAAABQAAwABAAAAFAAEAEAAAAAMAAgAAgAEAAEAICWyJbz//f//AAAAAAAgJbIlvP/9//8AAf/j2lLaSQADAAEAAAAAAAAAAAAAAAAAAQAB//8ADwABAAAAAQAAv+5hgl8PPPUACwIAAAAAANAbYk0AAAAA0BtiTQAAAAAB5gFSAAAACAACAAAAAAAAAAEAAAHg/+AAAAIAAAAAAAHmAAEAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAQAAAAIAABoCAAAaAABQAAAGAAAAAAAOAK4AAQAAAAAAAQAMAAAAAQAAAAAAAgAOAEAAAQAAAAAAAwAMACIAAQAAAAAABAAMAE4AAQAAAAAABQAWAAwAAQAAAAAABgAGAC4AAQAAAAAACgA0AFoAAwABBAkAAQAMAAAAAwABBAkAAgAOAEAAAwABBAkAAwAMACIAAwABBAkABAAMAE4AAwABBAkABQAWAAwAAwABBAkABgAMADQAAwABBAkACgA0AFoAdQBwAGQAbwB3AG4AVgBlAHIAcwBpAG8AbgAgADEALgAwAHUAcABkAG8AdwBudXBkb3duAHUAcABkAG8AdwBuAFIAZQBnAHUAbABhAHIAdQBwAGQAbwB3AG4ARgBvAG4AdAAgAGcAZQBuAGUAcgBhAHQAZQBkACAAYgB5ACAASQBjAG8ATQBvAG8AbgAuAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=') format('woff');
+	     url('data:application/font-woff;charset=utf-8;base64,d09GRk9UVE8AAAToAAoAAAAABKAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABDRkYgAAAA9AAAAV0AAAFdCqRELE9TLzIAAAJUAAAAYAAAAGAoIixyY21hcAAAArQAAABUAAAAVCX3JjRnYXNwAAADCAAAAAgAAAAIAAAAEGhlYWQAAAMQAAAANgAAADYBOwTpaGhlYQAAA0gAAAAkAAAAJAPIAedobXR4AAADbAAAABgAAAAYBQAANG1heHAAAAOEAAAABgAAAAYABlAAbmFtZQAAA4wAAAE8AAABPPz7j4Rwb3N0AAAEyAAAACAAAAAgAAMAAAEABAQAAQEBB3VwZG93bgABAgABADr4HAL4GwP4GAQeCgAZU/+Lix4KABlT/4uLDAeLa/iU+HQFHQAAAHkPHQAAAH4RHQAAAAkdAAABVBIABwEBBw0PERQZHnVwZG93bnVwZG93bnUwdTF1MjB1MjVCMnUyNUJDAAACAYkABAAGAQEEBwoNbc38lA78lA78lA77lA6l9wAVi5CNkI6OCPdo92gFj46PjZCLkIuPiY+ICPdo+2gFjoiNhouGi4aJh4iHCFtcBYiHh4qGi4aLhoyIjwj7LPcs+yz7LAWIh4aKhouGi4eMiI8IW7oFiI+Jj4uQCA6l95YVi5CNj46PCLu6BY6Oj42Qi5CLkImOiAj3LPss9yz3LAWOjpCNkIuQi4+JjogIu1wFjoeNh4uGi4aJhoiICPto+2gFh4eHiYaLhouHjYePCPto92gFiI6JkIuQCA74lBT4lBWLDAoAAAAAAwIAAZAABQAAAUwBZgAAAEcBTAFmAAAA9QAZAIQAAAAAAAAAAAAAAAAAAAABAAAgAAAAAAAAAAAAAAAAAABAAAAlvAHg/+D/4AHgACAAAAABAAAAAAAAAAAAAAAgAAAAAAACAAAAAwAAABQAAwABAAAAFAAEAEAAAAAMAAgAAgAEAAEAICWyJbz//f//AAAAAAAgJbIlvP/9//8AAf/j2lLaSQADAAEAAAAAAAAAAAAAAAAAAQAB//8ADwABAAAAAQAAv+5hgl8PPPUACwIAAAAAANAbYk0AAAAA0BtiTQAAAAAB5gFSAAAACAACAAAAAAAAAAEAAAHg/+AAAAIAAAAAAAHmAAEAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAQAAAAIAABoCAAAaAABQAAAGAAAAAAAOAK4AAQAAAAAAAQAMAAAAAQAAAAAAAgAOAEAAAQAAAAAAAwAMACIAAQAAAAAABAAMAE4AAQAAAAAABQAWAAwAAQAAAAAABgAGAC4AAQAAAAAACgA0AFoAAwABBAkAAQAMAAAAAwABBAkAAgAOAEAAAwABBAkAAwAMACIAAwABBAkABAAMAE4AAwABBAkABQAWAAwAAwABBAkABgAMADQAAwABBAkACgA0AFoAdQBwAGQAbwB3AG4AVgBlAHIAcwBpAG8AbgAgADEALgAwAHUAcABkAG8AdwBudXBkb3duAHUAcABkAG8AdwBuAFIAZQBnAHUAbABhAHIAdQBwAGQAbwB3AG4ARgBvAG4AdAAgAGcAZQBuAGUAcgBhAHQAZQBkACAAYgB5ACAASQBjAG8ATQBvAG8AbgAuAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=') format('woff');
 	font-weight: normal;
 	font-style: normal;
 }
+
 #InfScrollNav .JTT, #InfScrollNav .JTB {
 	font-family: 'updown';
 }
+
 .InfScrollFixed {
 	position: fixed;
 	top: 0;
 }
+
 .InfScrollFixed .MeBox {
 	position: relative;
 }
+
 #InfScrollNav {
 	position: fixed;
 	padding: 5px 25px;
@@ -27,73 +32,193 @@
 	text-align: center;
 	font-size: 2.3em;
 }
+
 #InfScrollNav.TopRight {
-	top:0;
-	right:0;
+	top: 0;
+	right: 0;
 }
+
 #InfScrollNav.BottomRight {
-	bottom:0;
-	right:0;
+	bottom: 0;
+	right: 0;
 }
+
 #InfScrollNav.TopLeft {
-	top:0;
-	left:0;
+	top: 0;
+	left: 0;
 }
+
 #InfScrollNav.BottomLeft {
-	bottom:0;
-	left:0;
+	bottom: 0;
+	left: 0;
 }
+
 #InfScrollNav a {
 	color: black;
 	text-decoration: none;
 	padding: 0 7px;
 	opacity: .4;
 }
+
 #InfScrollNav a:hover {
 	opacity: 1;
 }
+
 #InfScrollNav .small {
 	font-size: .5em;
 }
+
 #InfScrollNav .PageCount {
 	cursor: pointer;
 }
+
 #InfScrollNav.active .PageCount {
-	display:none;
+	display: none;
 }
+
 #InfScrollNav .JumpTo {
 	display: none;
 }
+
 #InfScrollNav.active .JumpTo {
 	display: inline-block;
 }
+
 #InfScrollNav .JumpTo .InputBox {
 	padding: 0;
 	width: 42px;
 	text-align: center;
 	display: inline-block;
 }
+
 #PageProgress {
 	position: fixed;
 	bottom: 50%;
 	right: 49%;
 	display: none;
 }
+
 @-webkit-keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
 @-moz-keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
 @keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
+
 .InfScrollHighlight {
 	-webkit-animation: InfScrollHighlight 2s;
 	-moz-animation: InfScrollHighlight 2s;
 	animation: InfScrollHighlight 2s;
 }
+
 @media only screen
 and (max-device-width : 480px) {
 	#InfScrollNav {
 		display: none;
 	}
 }
+
 .NumberedPager > div.spinner {
 	background: none;
 	border: none;
 }
+
+/* Discourse-style page navigation. Uncomment to use: */
+
+/*#ProgressBar {
+	height: 34px !important;
+	margin-bottom: -30px;
+}
+
+#ProgressBar>div {
+	background: #86EA86 !important;
+}
+
+#InfScrollNav {
+	background: #E9E9E9;
+	width: 145px;
+	height: 34px;
+	min-width: 0;
+	min-height: 0;
+	color: #919191;
+	padding: 0;
+}
+
+#InfScrollNav .PageCount {
+	font-weight: bold;
+	font-size: 18px;
+	line-height: 30px;
+	font-family: Helvetica,Arial,sans-serif;
+	display: block;
+	position: absolute;
+	letter-spacing: 1px;
+	left: 0;
+	right: 0;
+	top: 0;
+}
+
+#InfScrollNav.BottomRight .PageCount, #InfScrollNav.BottomLeft .PageCount {
+	top: auto;
+	bottom: 0;
+}
+
+#InfScrollNav .PageCount .NavIndex, #InfScrollNav .PageCount .small {
+	position: relative;
+	z-index: 10000;
+}
+
+#InfScrollNav .small {
+	font-size: 1em;
+}
+
+#InfScrollNav .JTT, #InfScrollNav .JTB {
+	border: solid white;
+	border-width: 5px 5px 0 5px;
+	line-height: 35px;
+	padding-bottom: 3px;
+	display: none;
+}
+
+#InfScrollNav .JTB {
+	border-width: 0 5px 5px 5px;
+}
+
+#InfScrollNav.active .JTT,#InfScrollNav.active .JTB {
+	display: block;
+}
+
+#InfScrollNav a.JTT,#InfScrollNav a.JTB,#InfScrollNav a.JTT:hover, #InfScrollNav a.JTB:hover, #InfScrollNav .JumpTo {
+	opacity: 1;
+	color: #919191;
+}
+
+#InfScrollNav.active {
+	height: auto;
+	padding-top: 34px;
+	box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
+}
+
+#InfScrollNav.BottomRight.active, #InfScrollNav.BottomLeft.active {
+	padding-top: 0;
+	padding-bottom: 34px;
+}
+
+#InfScrollNav.active .JumpTo.small {
+	font-size: 14px;
+	line-height: 35px;
+	display: block;
+	background: white;
+	max-height: 35px;
+	overflow: hidden;
+	text-indent: -185px;
+}
+
+#InfScrollNav br {
+	display: none;
+}
+
+#InfScrollNav .InputBox {
+	margin-left: 100px;
+}
+
+#InfScrollNav.active .PageCount {
+	display: block;
+}
+*/

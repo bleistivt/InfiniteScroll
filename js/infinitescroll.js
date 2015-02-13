@@ -153,7 +153,7 @@ jQuery(function ($) {
         var ProgressBar = new Nanobar({
             bg: def('ProgressBg'),
             id: 'ProgressBar',
-            target: def('NavProgress', false) ? null : $('#InfScrollNav .PageCount')[0]
+            target: def('NavProgress', false) ? $('#InfScrollNav .PageCount')[0] : null
         });
     }
 
@@ -421,7 +421,7 @@ jQuery(function ($) {
 
         // Prevent the browser from jumping between hashes on first the load.
         unload = true;
-        setTimeout(function () { unload = false; }, 850);
+        setTimeout(function () { unload = false; updateIndex(); }, 850);
 
         // Prepare the page and attach the scroll handler-
         preparation(def('Page', false));

@@ -124,7 +124,10 @@ and (max-device-width : 480px) {
 	border: none;
 }
 
-/* Discourse-style page navigation. Uncomment to use: */
+/* 
+    Discourse-style page navigation. Uncomment to use:
+    (Requires the "Attach the progress bar to the navigation" option.)
+*/
 
 /*#ProgressBar {
 	height: 34px !important;

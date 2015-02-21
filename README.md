@@ -3,9 +3,19 @@ InfiniteScroll
 
 Infinite Scrolling for Vanilla Forums
 
-This plugin hijacks the pagination, reloads the next set of posts or discussions und updates the URL when the end (or the beginning) of the page is reached.
+This plugin hijacks the pagination, loads the next set of posts or discussions and updates the URL when the user reaches the end of the page.
 
-For a better reading experience, a progress bar is shown at the top of the page, so readers of a discussion don't get lost.  
-Users may also choose in their profile if they want to disable infinite scrolling (activated by default).
+The plugin indicates the current position in a thread with a progress bar and adds a fixed navigation box that enables users to freely jump to any page without reloading.
 
-Aditionally, this plugin adds the option to make the Panel (sidebar) sticky.
+Users may also choose to disable infinite scrolling in their profile.
+
+v2.0 features:
+
+* Overall smoother experience
+* Table view compatibility
+* Page navigation on discussion lists
+* Tested with the most popular themes
+* Mobile compatible
+* Switchable styles
+* Fewer but better options
+* Optimized for performance

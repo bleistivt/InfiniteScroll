@@ -15,22 +15,19 @@
 	font-family: 'updown';
 }
 
-.InfScrollFixed {
-	position: fixed;
-	top: 0;
-}
-
-.InfScrollFixed .MeBox {
-	position: relative;
+html {
+	overflow-y: scroll;
 }
 
 #InfScrollNav {
+	color: rgba(0, 0, 0, 0.5);
 	position: fixed;
-	padding: 5px 25px;
+	padding: 5px;
 	min-width: 185px;
-	min-height: 42px;
+	min-height: 45px;
 	text-align: center;
 	font-size: 2.3em;
+	z-index: 10;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
@@ -58,22 +55,26 @@
 }
 
 #InfScrollNav a {
-	color: black;
+	color: inherit;
 	text-decoration: none;
-	padding: 0 7px;
 	opacity: .4;
+	line-height: 45px;
+	outline: 0;
 }
 
 #InfScrollNav a:hover {
 	opacity: 1;
+	color: inherit;
 }
 
-#InfScrollNav .small {
+#InfScrollNav .small, #InfScrollNav .slash {
 	font-size: .5em;
 }
 
 #InfScrollNav .PageCount {
 	cursor: pointer;
+	min-width: 100px;
+	display: inline-block;
 }
 
 #InfScrollNav.active .PageCount {
@@ -85,6 +86,7 @@
 }
 
 #InfScrollNav.active .JumpTo {
+	min-width: 100px;
 	display: inline-block;
 }
 
@@ -95,6 +97,12 @@
 	display: inline-block;
 }
 
+.ScrollProgress {
+	position: relative;
+	padding: 0 50%;
+	height: 0;
+}
+
 #PageProgress {
 	position: fixed;
 	bottom: 50%;
@@ -102,21 +110,21 @@
 	display: none;
 }
 
-@-webkit-keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
-@-moz-keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
-@keyframes InfScrollHighlight { 5%{ background-color:#ff8; } }
-
-.InfScrollHighlight {
-	-webkit-animation: InfScrollHighlight 2s;
-	-moz-animation: InfScrollHighlight 2s;
-	animation: InfScrollHighlight 2s;
+.CommentsWrap .BeforeCommentHeading,
+.CommentsWrap .Pager,
+.Discussions .BeforeCommentHeading,
+.Discussions .Pager {
+	float: none;
 }
 
-@media only screen
-and (max-device-width : 480px) {
-	#InfScrollNav {
-		display: none;
-	}
+@-webkit-keyframes InfScrollHighlight { 5%{ background-color:#ffb; } }
+@-moz-keyframes InfScrollHighlight { 5%{ background-color:#ffb; } }
+@keyframes InfScrollHighlight { 5%{ background-color:#ffb; } }
+
+.Section-DiscussionList .InfScrollHighlight {
+	-webkit-animation: InfScrollHighlight 3s;
+	-moz-animation: InfScrollHighlight 3s;
+	animation: InfScrollHighlight 3s;
 }
 
 .NumberedPager > div.spinner {
@@ -124,21 +132,20 @@ and (max-device-width : 480px) {
 	border: none;
 }
 
-/* 
-    Discourse-style page navigation. Uncomment to use:
-    (Requires the "Attach the progress bar to the navigation" option.)
+/*
+	Discourse-inspired style
 */
 
-/*#ProgressBar {
+.StyleDisc #ProgressBar {
 	height: 34px !important;
 	margin-bottom: -34px;
 }
 
-#ProgressBar>div {
+.StyleDisc #ProgressBar > div {
 	background: #86EA86 !important;
 }
 
-#InfScrollNav {
+#InfScrollNav.StyleDisc {
 	background: #E9E9E9;
 	width: 145px;
 	height: 34px;
@@ -148,7 +155,7 @@ and (max-device-width : 480px) {
 	padding: 0;
 }
 
-#InfScrollNav .PageCount {
+#InfScrollNav.StyleDisc .PageCount {
 	font-weight: bold;
 	font-size: 18px;
 	line-height: 34px;
@@ -161,71 +168,116 @@ and (max-device-width : 480px) {
 	top: 0;
 }
 
-#InfScrollNav.BottomRight .PageCount, #InfScrollNav.BottomLeft .PageCount {
+#InfScrollNav.StyleDisc.BottomRight .PageCount,
+#InfScrollNav.StyleDisc.BottomLeft .PageCount {
 	top: auto;
 	bottom: 0;
 }
 
-#InfScrollNav .PageCount .NavIndex, #InfScrollNav .PageCount .small {
+#InfScrollNav.StyleDisc .NavIndex,
+#InfScrollNav.StyleDisc .PageCount > span {
 	position: relative;
 	z-index: 10000;
 }
 
-#InfScrollNav .small {
+#InfScrollNav.StyleDisc .PageCount:before,
+#InfScrollNav.StyleDisc .PageCount:after {
+	content: '';
+	position: absolute;
+	z-index: 10000;
+	right: 8px;
+	border: solid transparent;
+	border-width: 5px 4px;
+}
+
+#InfScrollNav.StyleDisc.active .PageCount:before,
+#InfScrollNav.StyleDisc.active .PageCount:after {
+	border-color: transparent;
+}
+
+#InfScrollNav.StyleDisc .PageCount:before {
+	top: 12px;
+	border-top-width: 0;
+	border-bottom-color: #919191;
+}
+
+#InfScrollNav.StyleDisc .PageCount:after {
+	top: 19px;
+	border-bottom-width: 0;
+	border-top-color: #919191;
+}
+
+#InfScrollNav.StyleDisc .small{
 	font-size: 1em;
 }
 
-#InfScrollNav .JTT, #InfScrollNav .JTB {
+#InfScrollNav.StyleDisc .slash {
+	font-size: .75em;
+	line-height: 1em;
+	padding: 0 3px;
+	font-weight: normal;
+}
+
+#InfScrollNav.StyleDisc .JTT, #InfScrollNav.StyleDisc .JTB {
 	border: solid white;
 	border-width: 5px 5px 0 5px;
 	line-height: 35px;
 	padding-bottom: 3px;
 	display: none;
+	transition: background-color .25s, color .25s;
 }
 
-#InfScrollNav .JTB {
+#InfScrollNav.StyleDisc .JTB {
 	border-width: 0 5px 5px 5px;
 }
 
-#InfScrollNav.active .JTT,#InfScrollNav.active .JTB {
+#InfScrollNav.StyleDisc.active .JTT,#InfScrollNav.StyleDisc.active .JTB{
 	display: block;
-}
-
-#InfScrollNav a.JTT,#InfScrollNav a.JTB,#InfScrollNav a.JTT:hover, #InfScrollNav a.JTB:hover, #InfScrollNav .JumpTo {
 	opacity: 1;
 	color: #919191;
 }
 
-#InfScrollNav.active {
-	height: auto;
-	padding-top: 34px;
-	box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
+#InfScrollNav.StyleDisc a.JTT:hover, #InfScrollNav.StyleDisc a.JTB:hover {
+	opacity: 1;
+	background: #B2B2B2;
+	color: white;
 }
 
-#InfScrollNav.BottomRight.active, #InfScrollNav.BottomLeft.active {
+#InfScrollNav.StyleDisc.active {
+	height: auto;
+	padding-top: 34px;
+	box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+#InfScrollNav.StyleDisc.BottomRight.active,
+#InfScrollNav.StyleDisc.BottomLeft.active {
 	padding-top: 0;
 	padding-bottom: 34px;
 }
 
-#InfScrollNav.active .JumpTo.small {
+#InfScrollNav.StyleDisc .JumpTo.small {
 	font-size: 14px;
 	line-height: 35px;
-	display: block;
 	background: white;
 	max-height: 35px;
 	overflow: hidden;
 	text-indent: -185px;
+	color: #919191;
 }
 
-#InfScrollNav br {
+#InfScrollNav.StyleDisc.active .JumpTo.small {
+	display: block;
+}
+
+
+#InfScrollNav.StyleDisc br {
 	display: none;
 }
 
-#InfScrollNav .InputBox {
+#InfScrollNav.StyleDisc .InputBox {
 	margin-left: 100px;
 }
 
-#InfScrollNav.active .PageCount {
+#InfScrollNav.StyleDisc.active .PageCount {
 	display: block;
 }
-*/

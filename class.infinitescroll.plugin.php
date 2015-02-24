@@ -43,7 +43,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
             $this->Enabled()
         ) {
             $this->PrepareDiscussionList($Sender);
-            $Sender->AddDefinition('InfiniteScroll.Url', Url('discussions'));
+            $Sender->AddDefinition('InfiniteScroll.Url', Url('discussions', true));
             $this->Resources($Sender);
         }
     }
@@ -52,7 +52,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
     public function CategoriesController_Render_Before($Sender) {
         if (C('InfiniteScroll.DiscussionList', true) && $Sender->Category && $this->Enabled()) {
             $this->PrepareDiscussionList($Sender);
-            $Sender->AddDefinition('InfiniteScroll.Url', $Sender->Category->Url);
+            $Sender->AddDefinition('InfiniteScroll.Url', CategoryUrl($Sender->Category, '', true));
             $this->Resources($Sender);
         }
     }

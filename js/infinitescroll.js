@@ -17,6 +17,7 @@ jQuery(function ($) {
     // Initialize variables and get the plugins configuration from the definitions.
     var $window = $(window),
         $document = $(document),
+        historySupport = window.history && 'replaceState' in window.history,
         ajax,
         pagesBefore = def('Page', 1) - 1,
         totalPages = def('TotalPages', 1),
@@ -39,7 +40,7 @@ jQuery(function ($) {
         ContentSelector = '#Content, main.page-content',
         NavIndex = $('#InfScrollNav .NavIndex'),
         HeadElemsSelector = '#Head, .BreadcrumbsWrapper, #Item_0, h2.CommentHeading, ' +
-            'div.PageDescription, h1.HomepageTitle, nav.navbar-static-top, ' +
+            'div.PageDescription, h1.HomepageTitle, nav.navbar-static-top, .ChildCategoryList, ' +
             'span.Breadcrumbs, #Content .DismissMessage, main.page-content .DismissMessage, ' +
             '#Frame > .Banner, #Frame > .Top, .well.search-form, .Top .Button.NewDiscussion',
         Panel = $('#Panel, aside.page-sidebar'),
@@ -185,7 +186,7 @@ jQuery(function ($) {
         }
 
         newState = (page !== 1 || inDiscussion) ? baseUrl + '/p' + page + hash : baseUrl;
-        if (newState !== window.location.href) {
+        if (newState !== window.location.href && historySupport) {
             history.replaceState(null, null, newState);
         }
         if (!InfScrollJT.is(':focus')) {

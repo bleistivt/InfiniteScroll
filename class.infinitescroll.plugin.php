@@ -3,7 +3,7 @@
 $PluginInfo['InfiniteScroll'] = array(
     'Name' => 'Infinite Scroll',
     'Description' => 'This plugin hijacks the pagination, loads the next set of posts or discussions and updates the URL when the user reaches the end of the page.',
-    'Version' => '2.0.1',
+    'Version' => '2.0.2',
     'RequiredApplications' => array('Vanilla' => '2.1.1'),
     'SettingsPermission' => 'Garden.Settings.Manage',
     'SettingsUrl' => '/settings/infinitescroll',

@@ -190,7 +190,7 @@ jQuery(function ($) {
             history.replaceState(null, null, newState);
         }
         if (!InfScrollJT.is(':focus')) {
-            InfScrollJT.val(page);
+            InfScrollJT.val(page).data('page', page.toString());
         }
         NavIndex.text(index);
         // 99.9% to prevent the progress bar from disappearing completely.
@@ -440,6 +440,11 @@ jQuery(function ($) {
             InfScrollJT.select();
             return false;
         }).select();
+    }).focusout(function () {
+        // Mobile Chrome does not autosubmit a number input.
+        if (InfScrollJT.data('page') !== InfScrollJT.val() && def('Mobile', false)) {
+            InfScrollJT.data('page', InfScrollJT.val()).parent().submit();
+        }
     });
 
     $('#InfScrollNav form.JumpTo').submit(function () {

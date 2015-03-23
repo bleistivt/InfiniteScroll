@@ -17,7 +17,7 @@ jQuery(function ($) {
     // Initialize variables and get the plugins configuration from the definitions.
     var $window = $(window),
         $document = $(document),
-        historySupport = window.history && 'replaceState' in window.history,
+        historySupport = !!(window.history && window.history.replaceState),
         ajax,
         pagesBefore = def('Page', 1) - 1,
         totalPages = def('TotalPages', 1),

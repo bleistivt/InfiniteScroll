@@ -33,7 +33,9 @@ jQuery(function ($) {
         scrollstop = null,
         ProgressBar,
         // Selectors for default theme, Bitter Sweet and Bootstrap
-        DataListSelector = '#Content ul.DataList.Discussions, ' +
+        DataListSelector = '#Content ul.DataList.Comments, ' +
+            'main.page-content ul.DataList.Comments, ' +
+            '#Content ul.DataList.Discussions, ' +
             'main.page-content ul.DataList.Discussions, ' +
             '#Content table.DataTable.DiscussionsTable tbody, ' +
             'main.page-content table.DataTable.DiscussionsTable tbody',
@@ -167,7 +169,7 @@ jQuery(function ($) {
             LastInview = ItemsInview.last(),
 
             // Calculate the actual index of the last comment currently visible.
-            listIndex = LastInview.index('.DataList.Discussions > .Item, tbody > .Item') + 1,
+            listIndex = LastInview.index('.DataList.Comments > .Item, .DataList.Discussions > .Item, tbody > .Item') + 1,
             index = pagesBefore * perPage + listIndex + (inDiscussion ? 1 : 0),
             page = pagesBefore + Math.floor((listIndex - ItemsInview.length) / perPage) + 1,
 

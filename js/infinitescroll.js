@@ -232,8 +232,6 @@ jQuery(function ($) {
                 Content.find('.CommentForm').show();
                 $(PagerAfter).remove();
             }
-            // Recalculate the DataList offset.
-            DataListOffset = DataList.offset();
 
             $document.trigger('CommentPagingComplete');
         }).always(function () {
@@ -384,7 +382,6 @@ jQuery(function ($) {
         }
         ajax = false;
         infiniteScroll();
-
     }, 500);
 
     // Prepare the page and attach the scroll handler.

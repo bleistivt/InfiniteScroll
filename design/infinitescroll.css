@@ -141,10 +141,6 @@ html {
 	margin-bottom: -34px;
 }
 
-.StyleDisc #ProgressBar > div {
-	background: #86EA86 !important;
-}
-
 #InfScrollNav.StyleDisc {
 	background: #E9E9E9;
 	width: 145px;

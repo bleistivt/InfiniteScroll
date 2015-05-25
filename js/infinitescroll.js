@@ -374,7 +374,7 @@ jQuery(function ($) {
     ///////////////////////////////////////////////////////////////////////////
 
 
-    // Prevent the browser from jumping between hashes on first the load.
+    // Prevent the browser from jumping between hashes on the first load.
     ajax = true;
     setTimeout(function () {
         if (location.hash) {

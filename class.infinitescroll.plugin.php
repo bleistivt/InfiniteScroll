@@ -6,9 +6,9 @@ $PluginInfo['InfiniteScroll'] = array(
     'Version' => '2.0.3',
     'RequiredApplications' => array('Vanilla' => '2.1.1'),
     'SettingsPermission' => 'Garden.Settings.Manage',
-    'SettingsUrl' => '/settings/infinitescroll',
+    'SettingsUrl' => 'settings/infinitescroll',
     'MobileFriendly' => true,
-    'Author' => 'Bleisitvt',
+    'Author' => 'Bleistivt',
     'AuthorUrl' => 'http://bleistivt.net',
     'License' => 'GNU GPL2'
 );
@@ -16,7 +16,7 @@ $PluginInfo['InfiniteScroll'] = array(
 class InfiniteScrollPlugin extends Gdn_Plugin {
 
     public function discussionController_render_before($sender) {
-        if (!c('InfiniteScroll.Discussion', true) || !$sender->data('Page') || !$this->enabled()) {
+        if (!$sender->data('Page') || !$this->enabled('Discussion')) {
             return;
         }
 
@@ -36,11 +36,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
 
 
     public function discussionsController_render_before($sender) {
-        if (
-            c('InfiniteScroll.DiscussionList', true) &&
-            strtolower($sender->RequestMethod) == 'index' &&
-            $this->enabled()
-        ) {
+        if (strtolower($sender->RequestMethod) == 'index' && $this->enabled('DiscussionList')) {
             $this->prepareDiscussionList($sender);
             $sender->addDefinition('InfiniteScroll.Url', url('discussions', true));
             $this->resources($sender);
@@ -49,7 +45,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
 
 
     public function categoriesController_render_before($sender) {
-        if (c('InfiniteScroll.DiscussionList', true) && $sender->Category && $this->enabled()) {
+        if ($sender->Category && $this->enabled('DiscussionList')) {
             $this->prepareDiscussionList($sender);
             $sender->addDefinition('InfiniteScroll.Url', categoryUrl($sender->Category, '', true));
             $this->resources($sender);
@@ -126,7 +122,10 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
 
 
     // Check for mobile view and user preference
-    private function enabled() {
+    private function enabled($section = false) {
+        if ($section && !c('InfiniteScroll.'.$section, true)) {
+            return false;
+        }
         $session = Gdn::session();
         return !(
             ($session->IsValid() && !$this->getUserMeta($session->UserID, 'Enable', true, true)) ||
@@ -137,10 +136,6 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
 
     // Attach the resources.
     private function resources($sender) {
-        if (!$this->enabled()) {
-            return;
-        }
-
         $sender->addDefinition('InfiniteScroll.HideHead', c('InfiniteScroll.HideHead', true));
         $sender->addDefinition('InfiniteScroll.Treshold', (int)c('InfiniteScroll.Treshold', 200));
         $sender->addDefinition('InfiniteScroll.Hotkey', c('InfiniteScroll.Hotkey', 'j'));
@@ -160,7 +155,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
     public function profileController_editMyAccountAfter_handler($sender) {
         $checked = ($this->getUserMeta(Gdn::session()->UserID, 'Enable', true, true))
             ? array('checked' => 'checked')
-            : array();
+            : false;
         echo wrap(
             $sender->Form->checkbox('InfiniteScroll', 'Enable Infinite Scrolling', $checked),
             'li',

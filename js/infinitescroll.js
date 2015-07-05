@@ -1,5 +1,5 @@
-/*jslint browser: true */
-/*global jQuery, gdn, Nanobar*/
+/*jslint browser: true, white: true */
+/*global window, jQuery, gdn, Nanobar*/
 
 jQuery(function ($) {
     'use strict';
@@ -162,8 +162,8 @@ jQuery(function ($) {
             return;
         }
         // Get first and last comment visible in the viewport.
-        var ItemsInview = $('.Item', DataList).filter(function () {
-                return inview(this);
+        var ItemsInview = $('.Item', DataList).filter(function (ignore, element) {
+                return inview(element);
             }),
             FirstInview = ItemsInview.first(),
             LastInview = ItemsInview.last(),
@@ -183,7 +183,8 @@ jQuery(function ($) {
                 index = countItems;
                 page = totalPages;
             } else {
-                index = page = 1;
+                index = 1;
+                page = 1;
             }
         }
 
@@ -327,7 +328,7 @@ jQuery(function ($) {
         } else {
             page = $('#Page_' + page).offset().top;
         }
-        return $('html, body').animate({ scrollTop: page });
+        return $('html, body').animate({scrollTop: page});
     }
 
 
@@ -344,7 +345,9 @@ jQuery(function ($) {
 
         // Check if we can just scroll.
         if (pagesBefore < page && page < pageNext) {
-            scrollTo(scrollPage).promise().always(function () { infiniteScroll(); });
+            scrollTo(scrollPage).promise().always(function () {
+                infiniteScroll();
+            });
             return;
         }
 

@@ -153,11 +153,12 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
 
     // User preference checkbox for infinite scrolling on the "Edit Profile" page.
     public function profileController_editMyAccountAfter_handler($sender) {
-        $checked = ($this->getUserMeta(Gdn::session()->UserID, 'Enable', true, true))
-            ? array('checked' => 'checked')
-            : false;
+        $sender->Form->setValue(
+            'InfiniteScroll',
+            $this->getUserMeta($sender->User->UserID, 'Enable', true, true)
+        );
         echo wrap(
-            $sender->Form->checkbox('InfiniteScroll', 'Enable Infinite Scrolling', $checked),
+            $sender->Form->checkbox('InfiniteScroll', 'Enable Infinite Scrolling'),
             'li',
             array('class' => 'InfiniteScroll')
         );
@@ -166,7 +167,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
 
     public function userModel_afterSave_handler($sender, $args) {
         $this->setUserMeta(
-            val('UserID', $args['FormPostValues'], 0),
+            val('UserID', $args['FormPostValues']),
             'Enable',
             val('InfiniteScroll', $args['FormPostValues'], false)
         );

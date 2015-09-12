@@ -1,17 +1,17 @@
 <?php
 
-$PluginInfo['InfiniteScroll'] = array(
+$PluginInfo['InfiniteScroll'] = [
     'Name' => 'Infinite Scroll',
     'Description' => 'This plugin hijacks the pagination, loads the next set of posts or discussions and updates the URL when the user reaches the end of the page.',
     'Version' => '2.0.3',
-    'RequiredApplications' => array('Vanilla' => '2.1.1'),
+    'RequiredApplications' => ['Vanilla' => '2.1.1'],
     'SettingsPermission' => 'Garden.Settings.Manage',
     'SettingsUrl' => 'settings/infinitescroll',
     'MobileFriendly' => true,
     'Author' => 'Bleistivt',
     'AuthorUrl' => 'http://bleistivt.net',
     'License' => 'GNU GPL2'
-);
+];
 
 class InfiniteScrollPlugin extends Gdn_Plugin {
 
@@ -60,39 +60,40 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
         }
 
         $index = wrap(
-            wrap('?', 'span', array('class' => 'NavIndex'))
-              .wrap('/', 'span', array('class' => 'slash'))
-              .wrap($countItems, 'span', array('class' => 'small')),
+            wrap('?', 'span', ['class' => 'NavIndex'])
+              .wrap('/', 'span', ['class' => 'slash'])
+              .wrap($countItems, 'span', ['class' => 'small']),
             'span',
-            array('class' => 'PageCount')
+            ['class' => 'PageCount']
         );
         $jumpTo = wrap(
             t('jump to page')
               .'<br><input type="number" maxlength="4" id="InfScrollJT" class="InputBox" value="1">&nbsp;'
               .sprintf(t('of %s'), $totalPages),
-            'form', array('class' => 'JumpTo small')
+            'form', ['class' => 'JumpTo small']
         );
         $controls =
-            anchor('&#x25b2;', '#', array('class' => 'JTT'))
+            anchor('&#x25b2;', '#', ['class' => 'JTT'])
               .$index
               .$jumpTo
-              .anchor('&#x25bc;', '#', array('class' => 'JTB'));
+              .anchor('&#x25bc;', '#', ['class' => 'JTB']);
 
-        $position = array('BottomRight', 'TopRight', 'BottomLeft', 'TopLeft');
-        $style = array('', ' StyleDisc');
-        $options = array(
+        $position = ['BottomRight', 'TopRight', 'BottomLeft', 'TopLeft'];
+        $style = ['', ' StyleDisc'];
+        $options = [
             'id' => 'InfScrollNav',
             'class' => $position[c('InfiniteScroll.NavPosition', 0)]
                        .$style[c('InfiniteScroll.NavStyle', 0)]
-        );
+        ];
 
         $sender->addAsset('Foot', wrap($controls, 'div', $options), 'InfiniteScrollNavigation');
 
         // Progress indicator
         if ($totalPages > 1) {
-            $sender->addAsset('Foot', wrap('', 'span',
-                array('id' => 'PageProgress', 'class' => 'Progress'))
-            );
+            $sender->addAsset('Foot', wrap('', 'span', [
+                'id' => 'PageProgress',
+                'class' => 'Progress'
+            ]));
         }
     }
 
@@ -160,7 +161,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
         echo wrap(
             $sender->Form->checkbox('InfiniteScroll', 'Enable Infinite Scrolling'),
             'li',
-            array('class' => 'InfiniteScroll')
+            ['class' => 'InfiniteScroll']
         );
     }
 
@@ -181,46 +182,46 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
         $sender->addJsFile('settings.js', 'plugins/InfiniteScroll');
 
         $conf = new ConfigurationModule($sender);
-        $conf->initialize(array(
-            'InfiniteScroll.Discussion' => array(
+        $conf->initialize([
+            'InfiniteScroll.Discussion' => [
                 'Control' => 'CheckBox',
                 'LabelCode' => 'Enable on discussions',
                 'Default' => true
-            ),
-            'InfiniteScroll.DiscussionList' => array(
+            ],
+            'InfiniteScroll.DiscussionList' => [
                 'Control' => 'CheckBox',
                 'LabelCode' => 'Enable on discussion lists',
                 'Default' => true
-            ),
-            'InfiniteScroll.Mobile' => array(
+            ],
+            'InfiniteScroll.Mobile' => [
                 'Control' => 'CheckBox',
                 'LabelCode' => 'Enable on mobile devices',
                 'Default' => false
-            ),
-            'InfiniteScroll.Hotkey' => array(
+            ],
+            'InfiniteScroll.Hotkey' => [
                 'Control' => 'textbox',
                 'LabelCode' => 'Page Jump Hotkey',
                 'Default' => 'j',
-                'Options' => array('maxlength' => '1', 'style' => 'width:15px;')
-            ),
-            'InfiniteScroll.NavPosition' => array(
+                'Options' => ['maxlength' => '1', 'style' => 'width:15px;']
+            ],
+            'InfiniteScroll.NavPosition' => [
                 'Control' => 'dropdown',
-                'Items' => array('bottom right', 'top right', 'bottom left', 'top left'),
+                'Items' => ['bottom right', 'top right', 'bottom left', 'top left'],
                 'LabelCode' => 'Navigation Position'
-            ),
-            'InfiniteScroll.NavStyle' => array(
+            ],
+            'InfiniteScroll.NavStyle' => [
                 'Control' => 'dropdown',
-                'Items' => array('Basic', 'Discourse-inspired'),
+                'Items' => ['Basic', 'Discourse-inspired'],
                 'LabelCode' => 'Navigation Style'
-            ),
-            'InfiniteScroll.ProgressColor' => array(
+            ],
+            'InfiniteScroll.ProgressColor' => [
                 'Control' => 'textbox',
                 'LabelCode' => 'Progress Bar Color',
                 'Description' => t('Can be any CSS color. If you don\'t want the bar to be visible, simply enter "transparent".'),
                 'Default' => '#38abe3',
-                'Options' => array('maxlength' => '35', 'style' => 'width:160px;')
-            )
-        ));
+                'Options' => ['maxlength' => '35', 'style' => 'width:160px;']
+            ]
+        ]);
 
         $sender->title(t('InfiniteScroll Settings'));
         $conf->renderAll();

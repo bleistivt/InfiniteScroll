@@ -3,14 +3,14 @@
 $PluginInfo['InfiniteScroll'] = [
     'Name' => 'Infinite Scroll',
     'Description' => 'This plugin hijacks the pagination, loads the next set of posts or discussions and updates the URL when the user reaches the end of the page.',
-    'Version' => '2.0.4',
+    'Version' => '2.0.5',
     'SettingsPermission' => 'Garden.Settings.Manage',
     'SettingsUrl' => 'settings/infinitescroll',
     'MobileFriendly' => true,
     'Author' => 'Bleistivt',
     'AuthorUrl' => 'http://bleistivt.net',
     'License' => 'GNU GPL2',
-    'GitHub' => 'bleistivt/oneconversation'
+    'GitHub' => 'bleistivt/InfiniteScroll'
 ];
 
 class InfiniteScrollPlugin extends Gdn_Plugin {

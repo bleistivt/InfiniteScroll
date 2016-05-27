@@ -3,14 +3,14 @@
 $PluginInfo['InfiniteScroll'] = [
     'Name' => 'Infinite Scroll',
     'Description' => 'This plugin hijacks the pagination, loads the next set of posts or discussions and updates the URL when the user reaches the end of the page.',
-    'Version' => '2.0.3',
-    'RequiredApplications' => ['Vanilla' => '2.1.1'],
+    'Version' => '2.0.4',
     'SettingsPermission' => 'Garden.Settings.Manage',
     'SettingsUrl' => 'settings/infinitescroll',
     'MobileFriendly' => true,
     'Author' => 'Bleistivt',
     'AuthorUrl' => 'http://bleistivt.net',
-    'License' => 'GNU GPL2'
+    'License' => 'GNU GPL2',
+    'GitHub' => 'bleistivt/oneconversation'
 ];
 
 class InfiniteScrollPlugin extends Gdn_Plugin {
@@ -167,11 +167,13 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
 
 
     public function userModel_afterSave_handler($sender, $args) {
-        $this->setUserMeta(
-            val('UserID', $args['FormPostValues']),
-            'Enable',
-            val('InfiniteScroll', $args['FormPostValues'], false)
-        );
+        if (array_key_exists('InfiniteScroll', $args['FormPostValues'])) {
+            $this->setUserMeta(
+                val('UserID', $args['FormPostValues']),
+                'Enable',
+                val('InfiniteScroll', $args['FormPostValues'], false)
+            );
+        }
     }
 
 

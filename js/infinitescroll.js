@@ -26,6 +26,7 @@ jQuery(function ($) {
         perPage = def('PerPage'),
         inDiscussion = def('InDiscussion', false),
         hideHead = def('HideHead', true),
+        showPageNum = def('PageNumber', false),
         treshold = def('Treshold', 300),
         baseUrl = def('Url', false),
         Dummy = $('<div/>'),
@@ -195,7 +196,7 @@ jQuery(function ($) {
         if (!InfScrollJT.is(':focus')) {
             InfScrollJT.val(page).data('page', page.toString());
         }
-        NavIndex.text(index);
+        NavIndex.text(showPageNum ? page : index);
         // 99.9% to prevent the progress bar from disappearing completely.
         ProgressBar.go(index / countItems * 99.9);
     }

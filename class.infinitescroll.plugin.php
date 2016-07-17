@@ -3,7 +3,7 @@
 $PluginInfo['InfiniteScroll'] = [
     'Name' => 'Infinite Scroll',
     'Description' => 'This plugin hijacks the pagination, loads the next set of posts or discussions and updates the URL when the user reaches the end of the page.',
-    'Version' => '2.0.5',
+    'Version' => '2.1',
     'SettingsPermission' => 'Garden.Settings.Manage',
     'SettingsUrl' => 'settings/infinitescroll',
     'MobileFriendly' => true,
@@ -62,7 +62,11 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
         $index = wrap(
             wrap('?', 'span', ['class' => 'NavIndex'])
               .wrap('/', 'span', ['class' => 'slash'])
-              .wrap($countItems, 'span', ['class' => 'small']),
+              .wrap(
+                c('InfiniteScroll.PageNumber') ?  $totalPages : $countItems,
+                'span',
+                ['class' => 'small']
+            ),
             'span',
             ['class' => 'PageCount']
         );
@@ -140,6 +144,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
         $sender->addDefinition('InfiniteScroll.HideHead', c('InfiniteScroll.HideHead', true));
         $sender->addDefinition('InfiniteScroll.Treshold', (int)c('InfiniteScroll.Treshold', 200));
         $sender->addDefinition('InfiniteScroll.Hotkey', c('InfiniteScroll.Hotkey', 'j'));
+        $sender->addDefinition('InfiniteScroll.PageNumber', c('InfiniteScroll.PageNumber'));
         $sender->addDefinition('InfiniteScroll.NavStyle', (int)c('InfiniteScroll.NavStyle', 0));
         $sender->addDefinition('InfiniteScroll.ProgressBg', c('InfiniteScroll.ProgressColor', '#38abe3'));
         $sender->addDefinition('InfiniteScroll.Mobile', isMobile());

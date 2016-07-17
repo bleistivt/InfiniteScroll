@@ -77,10 +77,10 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
             'form', ['class' => 'JumpTo small']
         );
         $controls =
-            anchor('&#x25b2;', '#', ['class' => 'JTT'])
+            anchor('&#xf126;', '#', ['class' => 'JTT'])
               .$index
               .$jumpTo
-              .anchor('&#x25bc;', '#', ['class' => 'JTB']);
+              .anchor('&#xf11f;', '#', ['class' => 'JTB']);
 
         $position = ['BottomRight', 'TopRight', 'BottomLeft', 'TopLeft'];
         $style = ['', ' StyleDisc'];

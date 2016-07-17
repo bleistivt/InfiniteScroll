@@ -461,7 +461,9 @@ jQuery(function ($) {
     // Increment comment count when a new comment was added.
     $document.on('CommentAdded', function () {
         countItems += 1;
-        $('#InfScrollNav .PageCount span.small').text(countItems);
+        if (!showPageNum) {
+            $('#InfScrollNav .PageCount span.small').text(countItems);
+        }
         infiniteScroll();
     });
 

@@ -93,7 +93,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
     private function prepareDiscussionList($sender) {
         // Make the table view render just the inner content, similar to the modern view.
         if (c('Vanilla.Discussions.Layout') == 'table' && Gdn::request()->get('InnerList')) {
-            $sender->View = $this->getView('inner_table.php');
+            $sender->View = $sender->fetchViewLocation('inner_table', '', 'plugins/InfiniteScroll');
         }
 
         $page = (int)filter_var($sender->data('_Page'), FILTER_SANITIZE_NUMBER_INT);
@@ -195,7 +195,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
                 'Control' => 'textbox',
                 'LabelCode' => 'Page Jump Hotkey',
                 'Default' => 'j',
-                'Options' => ['maxlength' => '1', 'style' => 'width:15px;']
+                'Options' => ['maxlength' => '1', 'style' => 'width:30px;']
             ],
             'InfiniteScroll.NavPosition' => [
                 'Control' => 'dropdown',

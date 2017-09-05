@@ -1,9 +1,10 @@
 {
     "name": "Infinite Scroll",
     "description": "This plugin hijacks the pagination, loads the next set of posts or discussions and updates the URL when the user reaches the end of the page.",
-    "version": "2.1",
+    "version": "2.2",
     "settingsPermission": "Garden.Settings.Manage",
     "settingsUrl": "settings/infinitescroll",
+    "usePopupSettings": false,
     "mobileFriendly": true,
     "license": "GNU GPL2",
     "gitHub": "bleistivt/InfiniteScroll",

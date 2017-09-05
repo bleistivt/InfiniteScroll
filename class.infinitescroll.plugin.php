@@ -1,18 +1,5 @@
 <?php
 
-$PluginInfo['InfiniteScroll'] = [
-    'Name' => 'Infinite Scroll',
-    'Description' => 'This plugin hijacks the pagination, loads the next set of posts or discussions and updates the URL when the user reaches the end of the page.',
-    'Version' => '2.1',
-    'SettingsPermission' => 'Garden.Settings.Manage',
-    'SettingsUrl' => 'settings/infinitescroll',
-    'MobileFriendly' => true,
-    'Author' => 'Bleistivt',
-    'AuthorUrl' => 'http://bleistivt.net',
-    'License' => 'GNU GPL2',
-    'GitHub' => 'bleistivt/InfiniteScroll'
-];
-
 class InfiniteScrollPlugin extends Gdn_Plugin {
 
     public function discussionController_render_before($sender) {
@@ -185,8 +172,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
     // Settings page
     public function settingsController_infiniteScroll_create($sender) {
         $sender->permission('Garden.Settings.Manage');
-        $sender->addSideMenu('dashboard/settings/plugins');
-        $sender->addJsFile('settings.js', 'plugins/InfiniteScroll');
+        $sender->title(t('InfiniteScroll Settings'));
 
         $conf = new ConfigurationModule($sender);
         $conf->initialize([
@@ -222,15 +208,12 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
                 'LabelCode' => 'Navigation Style'
             ],
             'InfiniteScroll.ProgressColor' => [
-                'Control' => 'textbox',
+                'Control' => 'color',
                 'LabelCode' => 'Progress Bar Color',
                 'Description' => t('Can be any CSS color. If you don\'t want the bar to be visible, simply enter "transparent".'),
-                'Default' => '#38abe3',
-                'Options' => ['maxlength' => '35', 'style' => 'width:160px;']
+                'Default' => '#38abe3'
             ]
         ]);
-
-        $sender->title(t('InfiniteScroll Settings'));
         $conf->renderAll();
     }
 

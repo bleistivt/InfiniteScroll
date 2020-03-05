@@ -137,7 +137,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
         $sender->addDefinition('InfiniteScroll.Mobile', isMobile());
 
         $sender->addJsFile('nanobar.min.js', 'plugins/InfiniteScroll');
-        $sender->addJsFile('infinitescroll.min.js', 'plugins/InfiniteScroll');
+        $sender->addJsFile('infinitescroll.js', 'plugins/InfiniteScroll');
 
         $sender->addCssFile('infinitescroll.css', 'plugins/InfiniteScroll');
     }

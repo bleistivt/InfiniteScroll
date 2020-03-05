@@ -36,17 +36,21 @@ jQuery(function ($) {
         // Selectors for default theme, Bitter Sweet and Bootstrap
         DataListSelector = '#Content ul.DataList.Comments, ' +
             'main.page-content ul.DataList.Comments, ' +
+            'main.Content ul.DataList.Comments, ' +
             '#Content ul.DataList.Discussions, ' +
             'main.page-content ul.DataList.Discussions, ' +
+            'main.Content ul.DataList.Discussions, ' +
             '#Content table.DataTable.DiscussionsTable tbody, ' +
-            'main.page-content table.DataTable.DiscussionsTable tbody',
-        ContentSelector = '#Content, main.page-content',
+            'main.page-content table.DataTable.DiscussionsTable tbody ' +
+            'main.Content table.DataTable.DiscussionsTable tbody',
+        ContentSelector = '#Content, main.page-content, main.Content',
         NavIndex = $('#InfScrollNav .NavIndex'),
         HeadElemsSelector = '#Head, .BreadcrumbsWrapper, #Item_0, h2.CommentHeading, ' +
             'div.PageDescription, h1.HomepageTitle, nav.navbar-static-top, .ChildCategoryList, ' +
             'span.Breadcrumbs, #Content .DismissMessage, main.page-content .DismissMessage, ' +
-            '#Frame > .Banner, #Frame > .Top, .well.search-form, .Top .Button.NewDiscussion',
-        Panel = $('#Panel, aside.page-sidebar'),
+            '#Frame > .Banner, #Frame > .Top, .well.search-form, .Top .Button.NewDiscussion ' +
+            'div.Frame-header',
+        Panel = $('#Panel, aside.page-sidebar, aside.Panel-main'),
         InfScrollJT = $('#InfScrollJT'),
         Frame = $('#Frame'),
         PageProgress = $('#PageProgress'),
@@ -64,10 +68,11 @@ jQuery(function ($) {
 
     // Create the progress bar using the Nanobar plugin.
     ProgressBar = new Nanobar({
-        bg: countItems !== 1 ? def('ProgressBg') : 'transparent',
         id: 'ProgressBar',
         target: def('NavStyle', 0) !== 0 ? $('#InfScrollNav .PageCount')[0] : null
     });
+    // Set the progress bar color.
+    $('.bar').css('background', countItems !== 1 ? def('ProgressBg') : 'transparent');
 
 
     ///////////////////////////////////////////////////////////////////////////

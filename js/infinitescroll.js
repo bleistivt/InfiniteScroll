@@ -4,11 +4,6 @@
 jQuery(function ($) {
     'use strict';
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Variables
-    ///////////////////////////////////////////////////////////////////////////
-
-
     // Shorthand method for gdn.definition
     function def(definition, defaultVal) {
         return gdn.definition('InfiniteScroll.' + definition, defaultVal);
@@ -73,11 +68,6 @@ jQuery(function ($) {
     });
     // Set the progress bar color.
     $('.bar').css('background', countItems !== 1 ? def('ProgressBg') : 'transparent');
-
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Functions
-    ///////////////////////////////////////////////////////////////////////////
 
 
     // The core logic to check if an element is (nearly) visible in the viewport.
@@ -376,11 +366,6 @@ jQuery(function ($) {
             PageProgress.hide();
         });
     }
-
-
-    ///////////////////////////////////////////////////////////////////////////
-    // document.ready (like everything before)
-    ///////////////////////////////////////////////////////////////////////////
 
 
     // Prevent the browser from jumping between hashes on the first load.

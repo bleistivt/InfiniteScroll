@@ -1,19 +1,19 @@
 <?php if (!defined('APPLICATION')) exit();
 
-$Session = Gdn::Session();
-include_once $this->FetchViewLocation('helper_functions', 'discussions', 'vanilla');
-include_once $this->FetchViewLocation('table_functions', 'discussions', 'vanilla');
+$session = Gdn::session();
+include_once $this->fetchViewLocation('helper_functions', 'discussions', 'vanilla');
+include_once $this->fetchViewLocation('table_functions', 'discussions', 'vanilla');
 
-$Alt = '';
+$alt = '';
 if (property_exists($this, 'AnnounceData') && is_object($this->AnnounceData)) {
-    foreach ($this->AnnounceData->Result() as $Discussion) {
-        $Alt = $Alt == ' Alt' ? '' : ' Alt';
-        WriteDiscussionRow($Discussion, $this, $Session, $Alt);
+    foreach ($this->AnnounceData->result() as $discussion) {
+        $alt = $alt === ' Alt' ? '' : ' Alt';
+        writeDiscussionRow($discussion, $this, $session, $alt);
     }
 }
 
-$Alt = '';
-foreach ($this->DiscussionData->Result() as $Discussion) {
-    $Alt = $Alt == ' Alt' ? '' : ' Alt';
-    WriteDiscussionRow($Discussion, $this, $Session, $Alt);
+$alt = '';
+foreach ($this->DiscussionData->result() as $discussion) {
+    $alt = $alt === ' Alt' ? '' : ' Alt';
+    writeDiscussionRow($discussion, $this, $session, $alt);
 }

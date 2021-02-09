@@ -8,13 +8,13 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
         }
 
         $countComments = $sender->data('Discussion')->CountComments;
-        $totalPages = calculateNumberOfPages($countComments, c('Vanilla.Comments.PerPage', 30));
+        $totalPages = calculateNumberOfPages($countComments, Gdn::config('Vanilla.Comments.PerPage', 30));
 
         $sender->addDefinition('InfiniteScroll.InDiscussion', true);
         $sender->addDefinition('InfiniteScroll.CountItems', $countComments + 1);
         $sender->addDefinition('InfiniteScroll.Page', $sender->data('Page'));
         $sender->addDefinition('InfiniteScroll.TotalPages', $totalPages);
-        $sender->addDefinition('InfiniteScroll.PerPage', (int)c('Vanilla.Comments.PerPage', 30));
+        $sender->addDefinition('InfiniteScroll.PerPage', (int)Gdn::config('Vanilla.Comments.PerPage', 30));
         $sender->addDefinition('InfiniteScroll.Url', $sender->data('Discussion')->Url);
 
         $this->resources($sender);
@@ -42,7 +42,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
 
     // Builds the page navigation
     private function buildNavigation($sender, $countItems, $totalPages) {
-        if ($countItems <= c('InfiniteScroll.StartAt', 1)) {
+        if ($countItems <= Gdn::config('InfiniteScroll.StartAt', 1)) {
             return;
         }
 
@@ -50,7 +50,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
             wrap('?', 'span', ['class' => 'NavIndex'])
               .wrap('/', 'span', ['class' => 'slash'])
               .wrap(
-                c('InfiniteScroll.PageNumber') ?  $totalPages : $countItems,
+                Gdn::config('InfiniteScroll.PageNumber') ?  $totalPages : $countItems,
                 'span',
                 ['class' => 'small']
             ),
@@ -58,9 +58,9 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
             ['class' => 'PageCount']
         );
         $jumpTo = wrap(
-            t('jump to page')
+            Gdn::translate('jump to page')
               .'<br><input type="number" maxlength="4" id="InfScrollJT" class="InputBox" value="1">&nbsp;'
-              .sprintf(t('of %s'), $totalPages),
+              .sprintf(Gdn::translate('of %s'), $totalPages),
             'form', ['class' => 'JumpTo small']
         );
         $controls =
@@ -73,8 +73,8 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
         $style = ['', ' StyleDisc'];
         $options = [
             'id' => 'InfScrollNav',
-            'class' => $position[c('InfiniteScroll.NavPosition', 0)]
-                       .$style[c('InfiniteScroll.NavStyle', 0)]
+            'class' => $position[Gdn::config('InfiniteScroll.NavPosition', 0)]
+                       .$style[Gdn::config('InfiniteScroll.NavStyle', 0)]
         ];
 
         $sender->addAsset('Foot', wrap($controls, 'div', $options), 'InfiniteScrollNavigation');
@@ -92,7 +92,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
     // Add definitions for discussion lists.
     private function prepareDiscussionList($sender) {
         // Make the table view render just the inner content, similar to the modern view.
-        if (c('Vanilla.Discussions.Layout') == 'table' && Gdn::request()->get('InnerList')) {
+        if (Gdn::config('Vanilla.Discussions.Layout') == 'table' && Gdn::request()->get('InnerList')) {
             $sender->View = $sender->fetchViewLocation('inner_table', '', 'plugins/InfiniteScroll');
         }
 
@@ -101,13 +101,13 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
 
         $countDiscussions = $sender->data('CountDiscussions');
         $totalPages = calculateNumberOfPages(
-            $countDiscussions, c('Vanilla.Discussions.PerPage', 30)
+            $countDiscussions, Gdn::config('Vanilla.Discussions.PerPage', 30)
         );
 
         $sender->addDefinition('InfiniteScroll.CountItems', $countDiscussions);
         $sender->addDefinition('InfiniteScroll.Page', $page);
         $sender->addDefinition('InfiniteScroll.TotalPages', $totalPages);
-        $sender->addDefinition('InfiniteScroll.PerPage', (int)c('Vanilla.Discussions.PerPage', 30));
+        $sender->addDefinition('InfiniteScroll.PerPage', (int)Gdn::config('Vanilla.Discussions.PerPage', 30));
 
         $this->buildNavigation($sender, $countDiscussions, $totalPages);
     }
@@ -115,25 +115,25 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
 
     // Check for mobile view and user preference
     private function enabled($section = false) {
-        if ($section && !c('InfiniteScroll.'.$section, true)) {
+        if ($section && !Gdn::config('InfiniteScroll.'.$section, true)) {
             return false;
         }
         $session = Gdn::session();
         return !(
             ($session->IsValid() && !$this->getUserMeta($session->UserID, 'Enable', true, true)) ||
-            (!c('InfiniteScroll.Mobile', false) && isMobile())
+            (!Gdn::config('InfiniteScroll.Mobile', false) && isMobile())
         );
     }
 
 
     // Attach the resources.
     private function resources($sender) {
-        $sender->addDefinition('InfiniteScroll.HideHead', c('InfiniteScroll.HideHead', true));
-        $sender->addDefinition('InfiniteScroll.Treshold', (int)c('InfiniteScroll.Treshold', 200));
-        $sender->addDefinition('InfiniteScroll.Hotkey', c('InfiniteScroll.Hotkey', 'j'));
-        $sender->addDefinition('InfiniteScroll.PageNumber', c('InfiniteScroll.PageNumber'));
-        $sender->addDefinition('InfiniteScroll.NavStyle', (int)c('InfiniteScroll.NavStyle', 0));
-        $sender->addDefinition('InfiniteScroll.ProgressBg', c('InfiniteScroll.ProgressColor', '#38abe3'));
+        $sender->addDefinition('InfiniteScroll.HideHead', Gdn::config('InfiniteScroll.HideHead', true));
+        $sender->addDefinition('InfiniteScroll.Treshold', (int)Gdn::config('InfiniteScroll.Treshold', 200));
+        $sender->addDefinition('InfiniteScroll.Hotkey', Gdn::config('InfiniteScroll.Hotkey', 'j'));
+        $sender->addDefinition('InfiniteScroll.PageNumber', Gdn::config('InfiniteScroll.PageNumber'));
+        $sender->addDefinition('InfiniteScroll.NavStyle', (int)Gdn::config('InfiniteScroll.NavStyle', 0));
+        $sender->addDefinition('InfiniteScroll.ProgressBg', Gdn::config('InfiniteScroll.ProgressColor', '#38abe3'));
         $sender->addDefinition('InfiniteScroll.Mobile', isMobile());
 
         $sender->addJsFile('nanobar.min.js', 'plugins/InfiniteScroll');
@@ -171,7 +171,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
     // Settings page
     public function settingsController_infiniteScroll_create($sender) {
         $sender->permission('Garden.Settings.Manage');
-        $sender->title(t('InfiniteScroll Settings'));
+        $sender->title(Gdn::translate('InfiniteScroll Settings'));
 
         $conf = new ConfigurationModule($sender);
         $conf->initialize([
@@ -209,7 +209,7 @@ class InfiniteScrollPlugin extends Gdn_Plugin {
             'InfiniteScroll.ProgressColor' => [
                 'Control' => 'color',
                 'LabelCode' => 'Progress Bar Color',
-                'Description' => t('Can be any CSS color. If you don\'t want the bar to be visible, simply enter "transparent".'),
+                'Description' => Gdn::translate('Can be any CSS color. If you don\'t want the bar to be visible, simply enter "transparent".'),
                 'Default' => '#38abe3'
             ]
         ]);

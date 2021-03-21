@@ -1,59 +1,61 @@
-/*jslint browser: true, white: true */
 /*global window, jQuery, gdn, Nanobar*/
 
-jQuery(function ($) {
-    'use strict';
-
+jQuery(($) => {
     // Shorthand method for gdn.definition
     function def(definition, defaultVal) {
         return gdn.definition('InfiniteScroll.' + definition, defaultVal);
     }
 
     // Initialize variables and get the plugins configuration from the definitions.
-    var $window = $(window),
-        $document = $(document),
-        historySupport = !!(window.history && window.history.replaceState),
-        ajax,
-        pagesBefore = def('Page', 1) - 1,
-        totalPages = def('TotalPages', 1),
-        pageNext = pagesBefore + 2,
-        countItems = def('CountItems'),
-        perPage = def('PerPage'),
-        inDiscussion = def('InDiscussion', false),
-        hideHead = def('HideHead', true),
-        showPageNum = def('PageNumber', false),
-        treshold = def('Treshold', 300),
-        baseUrl = def('Url', false),
-        Dummy = $('<div/>'),
-        throttle = 0,
-        scrollstop = null,
-        ProgressBar,
-        // Selectors for default theme, Bitter Sweet and Bootstrap
-        DataListSelector = '#Content ul.DataList.Comments, ' +
-            'main.page-content ul.DataList.Comments, ' +
-            'main.Content ul.DataList.Comments, ' +
-            '#Content ul.DataList.Discussions, ' +
-            'main.page-content ul.DataList.Discussions, ' +
-            'main.Content ul.DataList.Discussions, ' +
-            '#Content table.DataTable.DiscussionsTable tbody, ' +
-            'main.page-content table.DataTable.DiscussionsTable tbody ' +
-            'main.Content table.DataTable.DiscussionsTable tbody',
-        ContentSelector = '#Content, main.page-content, main.Content',
-        NavIndex = $('#InfScrollNav .NavIndex'),
-        HeadElemsSelector = '#Head, .BreadcrumbsWrapper, #Item_0, h2.CommentHeading, ' +
-            'div.PageDescription, h1.HomepageTitle, nav.navbar-static-top, .ChildCategoryList, ' +
-            'span.Breadcrumbs, #Content .DismissMessage, main.page-content .DismissMessage, ' +
-            '#Frame > .Banner, #Frame > .Top, .well.search-form, .Top .Button.NewDiscussion ' +
-            'div.Frame-header',
-        Panel = $('#Panel, aside.page-sidebar, aside.Panel-main'),
-        InfScrollJT = $('#InfScrollJT'),
-        Frame = $('#Frame'),
-        PageProgress = $('#PageProgress'),
-        HeadElems,
-        DataList,
-        DataListOffset,
-        MessageList,
-        Content;
+    const $window = $(window);
+
+    const $document = $(document);
+    const historySupport = !!(window.history && window.history.replaceState);
+    let ajax;
+    let pagesBefore = def('Page', 1) - 1;
+    const totalPages = def('TotalPages', 1);
+    let pageNext = pagesBefore + 2;
+    let countItems = def('CountItems');
+    const perPage = def('PerPage');
+    const inDiscussion = def('InDiscussion', false);
+    const hideHead = def('HideHead', true);
+    const showPageNum = def('PageNumber', false);
+    const treshold = def('Treshold', 300);
+    const baseUrl = def('Url', false);
+    const Dummy = $('<div/>');
+    let throttle = 0;
+    let scrollstop = null;
+    let ProgressBar;
+
+    // Selectors for default theme, Bitter Sweet and Bootstrap
+    const DataListSelector = '#Content ul.DataList.Comments, ' +
+        'main.page-content ul.DataList.Comments, ' +
+        'main.Content ul.DataList.Comments, ' +
+        '#Content ul.DataList.Discussions, ' +
+        'main.page-content ul.DataList.Discussions, ' +
+        'main.Content ul.DataList.Discussions, ' +
+        '#Content table.DataTable.DiscussionsTable tbody, ' +
+        'main.page-content table.DataTable.DiscussionsTable tbody ' +
+        'main.Content table.DataTable.DiscussionsTable tbody';
+
+    const ContentSelector = '#Content, main.page-content, main.Content';
+    const NavIndex = $('#InfScrollNav .NavIndex');
+
+    const HeadElemsSelector = '#Head, .BreadcrumbsWrapper, #Item_0, h2.CommentHeading, ' +
+        'div.PageDescription, h1.HomepageTitle, nav.navbar-static-top, .ChildCategoryList, ' +
+        'span.Breadcrumbs, #Content .DismissMessage, main.page-content .DismissMessage, ' +
+        '#Frame > .Banner, #Frame > .Top, .well.search-form, .Top .Button.NewDiscussion ' +
+        'div.Frame-header';
+
+    const Panel = $('#Panel, aside.page-sidebar, aside.Panel-main');
+    const InfScrollJT = $('#InfScrollJT');
+    let Frame = $('#Frame');
+    const PageProgress = $('#PageProgress');
+    let HeadElems;
+    let DataList;
+    let DataListOffset;
+    let MessageList;
+    let Content;
 
 
     if (!Frame.length && $.fn.spin) {
@@ -77,11 +79,11 @@ jQuery(function ($) {
         }
         offset = offset || 0;
 
-        var windowTop = window.pageYOffset,
-            windowBottom = windowTop + window.innerHeight,
-            elementTop = 0,
-            elementBottom,
-            traverse = element;
+        const windowTop = window.pageYOffset;
+        const windowBottom = windowTop + window.innerHeight;
+        let elementTop = 0;
+        let elementBottom;
+        let traverse = element;
 
         while (traverse && !isNaN(traverse.offsetTop)) {
             elementTop += traverse.offsetTop;
@@ -104,9 +106,9 @@ jQuery(function ($) {
 
     // Prepares the page for infinite scrolling and can be called repeatedly.
     function preparation(page) {
-        var isLastPage = false,
-            isFirstPage = false,
-            dummyHeight;
+        let isLastPage = false;
+        let isFirstPage = false;
+        let dummyHeight;
         pagesBefore = page - 1;
         pageNext = page + 1;
         HeadElems = $(HeadElemsSelector);
@@ -157,22 +159,24 @@ jQuery(function ($) {
         if (ajax) {
             return;
         }
+
         // Get first and last comment visible in the viewport.
-        var ItemsInview = $('.Item', DataList).filter(function (ignore, element) {
-                return inview(element);
-            }),
-            FirstInview = ItemsInview.first(),
-            LastInview = ItemsInview.last(),
+        const ItemsInview = $('.Item', DataList).filter((ignore, element) => inview(element));
 
-            // Calculate the actual index of the last comment currently visible.
-            listIndex = LastInview.index('.DataList.Comments > .Item, .DataList.Discussions > .Item, tbody > .Item') + 1,
-            index = pagesBefore * perPage + listIndex + (inDiscussion ? 1 : 0),
-            page = pagesBefore + Math.floor((listIndex - ItemsInview.length) / perPage) + 1,
+        const FirstInview = ItemsInview.first();
+        const LastInview = ItemsInview.last();
 
-            // Don't add the hash on the first discussion post.
-            item0Inview = (pagesBefore === 0) ? inview(MessageList[0]) : false,
-            hash = (inDiscussion && FirstInview[0] && !item0Inview) ? '#' + FirstInview[0].id : '',
-            newState;
+        const // Calculate the actual index of the last comment currently visible.
+        listIndex = LastInview.index('.DataList.Comments > .Item, .DataList.Discussions > .Item, tbody > .Item') + 1;
+
+        let index = pagesBefore * perPage + listIndex + (inDiscussion ? 1 : 0);
+        let page = pagesBefore + Math.floor((listIndex - ItemsInview.length) / perPage) + 1;
+
+        const // Don't add the hash on the first discussion post.
+        item0Inview = (pagesBefore === 0) ? inview(MessageList[0]) : false;
+
+        const hash = (inDiscussion && FirstInview[0] && !item0Inview) ? '#' + FirstInview[0].id : '';
+        let newState;
 
         if (!LastInview.length) {
             if (window.pageYOffset > DataListOffset.top) {
@@ -215,7 +219,7 @@ jQuery(function ($) {
         ajax = true;
         showLoading(PagerAfter);
 
-        $.get(baseUrl + '/p' + pageNext + '?DeliveryType=VIEW&InnerList=1', function (data) {
+        $.get(baseUrl + '/p' + pageNext + '?DeliveryType=VIEW&InnerList=1', (data) => {
             // Extract and append the content.
             $(data)
                 .appendTo(DataList)
@@ -231,7 +235,7 @@ jQuery(function ($) {
             }
 
             $document.trigger('CommentPagingComplete');
-        }).always(function () {
+        }).always(() => {
             // Allow new requests, even if this request failed somehow.
             ajax = false;
             $('.ScrollProgress').remove();
@@ -246,9 +250,9 @@ jQuery(function ($) {
         showLoading(PagerBefore);
 
         // DeliveryType=VIEW can not be used here as it doesn't include the first post.
-        $.get(baseUrl + '/p' + pagesBefore, function (data) {
-            var OldHeight = $document.height(),
-                OldScroll = $window.scrollTop();
+        $.get(baseUrl + '/p' + pagesBefore, (data) => {
+            const OldHeight = $document.height();
+            const OldScroll = $window.scrollTop();
 
             $(DataListSelector, data)
                 .children().prependTo(DataList)
@@ -275,7 +279,7 @@ jQuery(function ($) {
             DataListOffset = DataList.offset();
 
             $document.trigger('CommentPagingComplete');
-        }).always(function () {
+        }).always(() => {
             ajax = false;
             $('.ScrollProgress').remove();
             updateIndex();
@@ -285,9 +289,9 @@ jQuery(function ($) {
 
     // Main scroll handler: loads new content if the end of the page is reached.
     function infiniteScroll() {
-        var PagerAfter,
-            PagerBefore,
-            now = Date.now();
+        let PagerAfter;
+        let PagerBefore;
+        const now = Date.now();
 
         // Throttle event handling for expensive functions.
         if (now > throttle + 100) {
@@ -334,14 +338,14 @@ jQuery(function ($) {
             return;
         }
         // 0,1 = Item_0; -1 = CommentForm; >1 = page
-        var scrollPage = page;
+        const scrollPage = page;
         if (page < 2) {
             page = (page === -1) ? totalPages : 1;
         }
 
         // Check if we can just scroll.
         if (pagesBefore < page && page < pageNext) {
-            scrollTo(scrollPage).promise().always(function () {
+            scrollTo(scrollPage).promise().always(() => {
                 infiniteScroll();
             });
             return;
@@ -352,16 +356,16 @@ jQuery(function ($) {
         Content.css('visibility', 'hidden');
         PageProgress.show();
 
-        $.get(baseUrl + '/p' + page, function (data) {
+        $.get(baseUrl + '/p' + page, (data) => {
             Content.replaceWith($(ContentSelector, data));
             preparation(page);
             scrollTo(scrollPage)
                 .promise()
-                .always(function () {
+                .always(() => {
                     ajax = false;
                     infiniteScroll();
                 });
-        }).always(function () {
+        }).always(() => {
             Content.css('visibility', 'visible');
             PageProgress.hide();
         });
@@ -370,7 +374,7 @@ jQuery(function ($) {
 
     // Prevent the browser from jumping between hashes on the first load.
     ajax = true;
-    setTimeout(function () {
+    setTimeout(() => {
         if (location.hash) {
             location.hash = location.hash.toString();
         }
@@ -383,7 +387,7 @@ jQuery(function ($) {
     $window.scroll(infiniteScroll);
 
     // Update the url when scrolling abruptly stops.
-    $window.scroll(function () {
+    $window.scroll(() => {
         if (scrollstop !== null) {
             clearTimeout(scrollstop);
         }
@@ -392,21 +396,21 @@ jQuery(function ($) {
 
 
     // Navigation box
-    $('#InfScrollNav .JTT').click(function (e) {
+    $('#InfScrollNav .JTT').click((e) => {
         e.preventDefault();
         jumpTo(0);
     });
-    $('#InfScrollNav .JTB').click(function (e) {
+    $('#InfScrollNav .JTB').click((e) => {
         e.preventDefault();
         jumpTo(-1);
     });
 
     // Jump box
-    $document.click(function (e) {
-        var Nav = $('#InfScrollNav');
-        if (!$(e.target).closest(Nav).length) {
+    $document.click(({target}) => {
+        const Nav = $('#InfScrollNav');
+        if (!$(target).closest(Nav).length) {
             Nav.removeClass('active');
-        } else if ($(e.target).closest('#InfScrollNav .PageCount').length) {
+        } else if ($(target).closest('#InfScrollNav .PageCount').length) {
             Nav.addClass('active');
             // Don't bring up the numpad on touch devices
             if (!def('Mobile', false) || def('NavStyle', 0) !== 1) {
@@ -416,11 +420,11 @@ jQuery(function ($) {
     });
 
     // Hotkey to jump between pages.
-    $document.keypress(function (e) {
-        if ($(e.target).is('input, textarea')) {
+    $document.keypress(({target, which, keyCode}) => {
+        if ($(target).is('input, textarea')) {
             return;
         }
-        var charCode = (e.which === 'undefined') ? e.keyCode : e.which;
+        const charCode = (which === 'undefined') ? keyCode : which;
         if (String.fromCharCode(charCode) === def('Hotkey', 'j').charAt(0)) {
             $('#InfScrollNav .PageCount').click();
         } else if (charCode === 13 && $('#InfScrollNav').is('.active')) {
@@ -428,20 +432,20 @@ jQuery(function ($) {
         }
     });
 
-    InfScrollJT.focus(function () {
-        InfScrollJT.one('mouseup', function () {
+    InfScrollJT.focus(() => {
+        InfScrollJT.one('mouseup', () => {
             InfScrollJT.select();
             return false;
         }).select();
-    }).focusout(function () {
+    }).focusout(() => {
         // Mobile Chrome does not autosubmit a number input.
         if (InfScrollJT.data('page') !== InfScrollJT.val() && def('Mobile', false)) {
             InfScrollJT.data('page', InfScrollJT.val()).parent().submit();
         }
     });
 
-    $('#InfScrollNav form.JumpTo').submit(function () {
-        var page = parseInt(InfScrollJT.val(), 10);
+    $('#InfScrollNav form.JumpTo').submit(() => {
+        const page = parseInt(InfScrollJT.val(), 10);
         if (0 < page && page <= totalPages) {
             jumpTo(page);
         }
@@ -449,12 +453,11 @@ jQuery(function ($) {
     });
 
     // Increment comment count when a new comment was added.
-    $document.on('CommentAdded', function () {
+    $document.on('CommentAdded', () => {
         countItems += 1;
         if (!showPageNum) {
             $('#InfScrollNav .PageCount span.small').text(countItems);
         }
         infiniteScroll();
     });
-
 });
